@@ -2,9 +2,9 @@
 import {
   global, Instance, defineObject, S, instance_create, instance_exists, withObj, random, round, ceil,
   merge_color, draw_sprite_ext, d3d_set_fog, sprite_get_number,
-} from '../runtime/gm.js?v=20261031163132';
-import { snd_play, snd_stop, snd_pitch } from '../runtime/audio.js?v=20261031163132';
-import { withInst, knightEnemy } from './common.js?v=20261031163132';
+} from '../runtime/gm.js?v=20261031165601';
+import { snd_play, snd_stop, snd_pitch } from '../runtime/audio.js?v=20261031165601';
+import { withInst, knightEnemy } from './common.js?v=20261031165601';
 
 const g = global;
 
@@ -118,7 +118,7 @@ export class HeroParent extends Instance {
             }
           }
           this.attacked = 1;
-          this.alarm[1] = 11;
+          this.alarm[1] = 10; // finishattacktimer = 11, counted down once in the same Step
         }
         this.image_index = this.attacktimer < this.attackframes ? this.attacktimer : this.attackframes;
         this.thissprite = this.attacksprite;
@@ -234,21 +234,20 @@ export class HeroParent extends Instance {
     this.becomeflash = 0;
   }
 
-  // The FIGHT hit lands 10 frames after the bolts resolve.
+  // obj_heroparent Step (finishattacktimer): the FIGHT hit lands 10 frames after the bolts resolve.
+  // The damage goes through scr_damage_enemy (number, HP, hurt shake, strong-hurt flag, defeat).
   alarm1() {
     const me = this.myself;
     g.faceaction[me] = 0;
     S.scr_retarget(this, me);
-    if (this.cancelattack != 0) return;
-    const t = g.chartarget[me];
-    const dm = instance_create(g.monsterx[t], g.monstery[t] - g.hittarget[t] * 20 + 20, 'obj_dmgwriter');
-    dm.type = this.char - 1;
-    dm.delay = 8;
-    let damage = round(g.battleat[me] * this.points / 20 - g.monsterdf[t] * 3);
     // The Knight takes reduced damage; Kris hits harder the more of the party is down.
     const knight = knightEnemy();
     let knightblock = 0;
     if (knight && knight.blocking == 1 && knight.damagereduction < 0.1) knightblock = 1;
+    this.knightblock = knightblock;
+    if (this.cancelattack != 0) return;
+    const t = g.chartarget[me];
+    let damage = round(g.battleat[me] * this.points / 20 - g.monsterdf[t] * 3);
     if (knight) {
       damage = ceil(damage * knight.damagereduction);
       if (this.object_index == 'obj_herokris') {
@@ -257,52 +256,34 @@ export class HeroParent extends Instance {
         else damage = round(damage * 0.5);
       }
     }
-    this.knightblock = knightblock;
-    if (damage < 0) damage = 0;
     this.damage = damage;
-    if (damage == 0) {
-      dm.delay = 2;
-      withInst(g.monsterinstance[t], m => {
-        if (m.hurttimer <= 15 && m.candodge == 1) {
-          m.dodgetimer = 0;
-          m.state = 4;
-        }
-      });
-    }
-    dm.damage = damage;
-    g.hittarget[t] += 1;
-    g.monsterhp[t] -= damage;
+    S.scr_damage_enemy(this, t, damage);
+    const dm = this.dm;
+    dm.type = this.char - 1;
+    dm.delay = 8;
     if (damage > 0) {
       S.scr_tensionheal(round(this.points / 10));
-      if (this.knightblock == 1) knight.blockanim = 1;
+      if (knightblock == 1) knight.blockanim = 1;
+      if (knightblock == 0) {
+        const attack = instance_create(g.monsterx[t] + random(6), g.monstery[t] + random(6), 'obj_basicattack');
+        if (this.object_index == 'obj_herosusie') {
+          attack.sprite_index = 'spr_attack_mash2';
+          attack.image_speed = 0.5;
+          attack.maxindex = 4;
+          snd_play('snd_impact');
+          instance_create(0, 0, 'obj_shake');
+        }
+        if (this.object_index == 'obj_heroralsei') {
+          attack.sprite_index = 'spr_attack_slap1';
+          attack.maxindex = 4;
+          attack.image_speed = 0.5;
+        }
+        if (this.points == 150) {
+          attack.image_xscale = 2.5;
+          attack.image_yscale = 2.5;
+        }
+      }
     }
-    if (damage > 0 && this.knightblock == 0) {
-      const attack = instance_create(g.monsterx[t] + random(6), g.monstery[t] + random(6), 'obj_basicattack');
-      if (this.object_index == 'obj_herosusie') {
-        attack.sprite_index = 'spr_attack_mash2';
-        attack.image_speed = 0.5;
-        attack.maxindex = 4;
-        snd_play('snd_impact');
-        instance_create(0, 0, 'obj_shake');
-      }
-      if (this.object_index == 'obj_heroralsei') {
-        attack.sprite_index = 'spr_attack_slap1';
-        attack.maxindex = 4;
-        attack.image_speed = 0.5;
-      }
-      if (this.points == 150) {
-        attack.image_xscale = 2.5;
-        attack.image_yscale = 2.5;
-      }
-      withInst(g.monsterinstance[t], m => {
-        m.shakex = 9;
-        m.state = 3;
-        m.hurttimer = 30;
-        if (knight && damage >= 100) knight.stronghurtanim = true;
-      });
-    }
-    if (damage > 0 && instance_exists(g.monsterinstance[t])) g.monsterinstance[t].hurtamt = damage;
-    if (g.monsterhp[t] <= 0) withInst(g.monsterinstance[t], m => S.scr_monsterdefeat(m));
   }
 
   // The spell/item takes effect 15 frames after the cast pose starts.

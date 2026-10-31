@@ -1,7 +1,6 @@
 // obj_endbattle: the party walks back to the overworld spots, then the simulator's ending screen
 // replaces the post-fight cutscene (obj_ch3_PTB02). obj_time also hands a pending game over to its screen.
-import { global, G, Instance, defineObject, S, point_direction, point_distance } from '../runtime/gm.js?v=20261031163132';
-import { mus_volume } from '../runtime/audio.js?v=20261031163132';
+import { global, G, Instance, defineObject, S, point_direction, point_distance } from '../runtime/gm.js?v=20261031165601';
 
 const g = global;
 
@@ -20,7 +19,8 @@ class EndBattle extends Instance {
       this.c.push(m);
     }
     this.alarm[0] = 10;
-    if (g.flag[9] == 1) mus_volume(g.batmusic[1], 0, this.alarm[0]);
+    // g.batmusic[1] is the playing voice (the runtime's mus_volume takes the stream).
+    if (g.flag[9] == 1) g.batmusic[1]?.setVolume?.(0, this.alarm[0]);
   }
   alarm0() {
     for (const m of this.c) m.speed = 0;

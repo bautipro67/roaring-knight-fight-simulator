@@ -5,10 +5,10 @@
 import {
   G, global, Instance, defineObject, defineScript, S, instance_create, instance_exists, draw_sprite_ext,
   draw_set_color, draw_set_font, draw_set_alpha, draw_rectangle,
-} from '../runtime/gm.js?v=20261031163132';
-import { snd_init, mus_loop_ext, mus_volume, mus_stop } from '../runtime/audio.js?v=20261031163132';
-import { startBattle } from '../battle/setup.js?v=20261031163132';
-import { gotoRoom, scr_darkbox, fadeOut, centerText } from './common.js?v=20261031163132';
+} from '../runtime/gm.js?v=20261031165601';
+import { snd_init, mus_loop_ext, mus_volume, mus_stop } from '../runtime/audio.js?v=20261031165601';
+import { startBattle } from '../battle/setup.js?v=20261031165601';
+import { gotoRoom, scr_darkbox, fadeOut, centerText } from './common.js?v=20261031165601';
 
 const BS = String.fromCharCode(92);
 const LINES = {

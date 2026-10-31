@@ -3,9 +3,9 @@
 import {
   G, global, Instance, defineObject, defineScript, instance_create, instance_destroy, instancesOf, place_meeting, point_distance, draw_self, draw_sprite_ext, event_user, S, snd_play, snd_stop,
   left_h, right_h, up_h, down_h, button2_h,
-} from './rt.js?v=20261031163132';
-import { first, view_x, view_y, move_towards_point } from './common.js?v=20261031163132';
-import { drawSoulHat } from '../hats.js?v=20261031163132';
+} from './rt.js?v=20261031165601';
+import { first, view_x, view_y, move_towards_point } from './common.js?v=20261031165601';
+import { drawSoulHat } from '../hats.js?v=20261031165601';
 
 const SOLID = 'obj_battlesolid';
 
@@ -135,12 +135,32 @@ export class Grazebox extends Instance {
     this.depth = 2;
   }
   create() {
+    this.grazetimer = 0;
+    this.grazetpfactor = 1;
+    this.grazetimefactor = 1;
+    this.grazesizefactor = 1;
+    this.grazecount = 0;
+    // Armour that changes grazing (ids 15, 24, 14 help; 3 and 9 widen the graze area but cost TP/time).
+    const arm = S.scr_armorcheck_equipped_party;
+    this.grazetpfactor += arm(15) * 0.1;
+    this.grazetpfactor += arm(24) * 0.05;
+    this.grazetpfactor -= arm(3) * 0.2;
+    this.grazetpfactor -= arm(9) * 0.25;
+    this.grazetimefactor += arm(14) * 0.1;
+    this.grazetimefactor -= arm(3) * 0.2;
+    this.grazetimefactor -= arm(9) * 0.25;
+    this.grazesizefactor += arm(3) * 0.2;
+    this.grazesizefactor += arm(9) * 0.25;
+    if (this.grazetimefactor > 3) this.grazetimefactor = 3;
+    if (this.grazetpfactor > 3) this.grazetpfactor = 3;
+    if (this.grazesizefactor > 3) this.grazesizefactor = 3;
+    this.image_xscale = this.grazesizefactor;
+    this.image_yscale = this.grazesizefactor;
     const h = first('obj_heart');
     if (h) {
       this.x = h.x + 10;
       this.y = h.y + 10;
     }
-    this.grazetimer = 0;
   }
   endStep() {
     const h = first('obj_heart');
@@ -153,23 +173,31 @@ export class Grazebox extends Instance {
     if (this.grazetimer > 0) {
       draw_sprite_ext(this.sprite_index, 0, this.x, this.y, 1, 1, 0, 0xffffff, this.grazetimer / 6);
       draw_sprite_ext(this.sprite_index, 3, this.x, this.y, 1, 1, 0, 0xffffff, this.grazetimer / 6 - 0.2);
+      if (this.image_xscale > 1) {
+        draw_sprite_ext(this.sprite_index, 0, this.x, this.y, this.image_xscale, this.image_yscale, 0, 0xffffff, this.grazetimer / 6);
+        draw_sprite_ext(this.sprite_index, 3, this.x, this.y, this.image_xscale, this.image_yscale, 0, 0xffffff, this.grazetimer / 6 - 0.2);
+      }
     }
     this.grazetimer -= 1;
   }
+  // Chapter 3: only active bullets (and the tunnel swords) graze; holding a graze gives 1/30 per frame.
   collision_obj_collidebullet(b) {
+    if (!(b.active > 0.5) && b.object_index !== 'obj_sword_tunnel_sword') return;
+    const tpf = this.grazetpfactor ?? 1, tf = this.grazetimefactor ?? 1;
     if (global.inv < 0) {
-      if (b.grazed === 1) {
-        S.scr_tensionheal(b.grazepoints / 20);
-        if (global.turntimer >= 10) global.turntimer -= b.timepoints / 20;
+      if (b.grazed == 1) {
+        S.scr_tensionheal(b.grazepoints / 30 * tpf);
+        if (global.turntimer >= 10) global.turntimer -= b.timepoints / 30 * tf;
         for (const gb of instancesOf('obj_grazebox')) {
           if (gb.grazetimer >= 0 && gb.grazetimer < 4) gb.grazetimer = 3;
           if (gb.grazetimer < 2) gb.grazetimer = 2;
         }
       }
-      if (b.grazed === 0) {
+      if (b.grazed == 0) {
+        for (const gb of instancesOf('obj_grazebox')) gb.grazecount = (gb.grazecount ?? 0) + 1;
         b.grazed = 1;
-        S.scr_tensionheal(b.grazepoints);
-        if (global.turntimer >= 10) global.turntimer -= b.timepoints;
+        S.scr_tensionheal(b.grazepoints * tpf);
+        if (global.turntimer >= 10) global.turntimer -= b.timepoints * tf;
         for (const c of instancesOf('obj_battlecontroller')) c.grazenoise = 1;
         for (const gb of instancesOf('obj_grazebox')) gb.grazetimer = 10;
       }

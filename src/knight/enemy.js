@@ -6,12 +6,12 @@ import {
   G, global, Instance, defineObject, instance_create, instance_create_depth, instance_destroy, instance_exists, instancesOf,
   choose, random, merge_color, make_color_hsv, draw_sprite_ext, d3d_set_fog, keyboard_check_pressed, button3_p,
   snd_play, snd_stop, mus_volume, draw_sprite_tiled_ext, bgr, S,
-} from './rt.js?v=20261031163132';
+} from './rt.js?v=20261031165601';
 import {
   first, camerax, cameray, i_ex, callOr, scr_lerpvar, scr_doom, snd_play_x, move_towards_point, tagParent,
-} from './common.js?v=20261031163132';
-import { scr_bulletspawner } from './dbullet.js?v=20261031163132';
-import { point_distance, objectExists } from '../runtime/gm.js?v=20261031163132';
+} from './common.js?v=20261031165601';
+import { scr_bulletspawner } from './dbullet.js?v=20261031165601';
+import { point_distance, objectExists } from '../runtime/gm.js?v=20261031165601';
 
 const MonsterParent = tagParent('obj_monsterparent');
 
@@ -41,6 +41,9 @@ function msgnext(s) {
   global.msg[global.msgno] = s;
 }
 const writerExists = () => i_ex('obj_writer');
+// mus_volume / mus_fade on global.batmusic[1]: that is the playing voice (mus_loop_ext's return),
+// which the runtime's mus_volume(stream) does not take, so its volume is set directly.
+const musVolume = (v, frames) => global.batmusic?.[1]?.setVolume?.(v, frames);
 // The objects each myattackchoice needs: a choice counts as ported once its attack module has
 // registered them (a missing or failed module only disables that attack).
 const CHOICE_OBJECTS = {
@@ -280,7 +283,14 @@ export class KnightEnemy extends MonsterParent {
     }
     if (this.end_cutscene_version === 1) {
       this.endtimer += 1;
-      if (this.endtimer === 32) S.scr_fadeout(15);
+      if (this.endtimer === 32) {
+        S.scr_fadeout(15);
+        for (const f of instancesOf('obj_fadeout')) {
+          f.image_blend = 0xffffff;
+          f.x -= 40;
+          f.length *= 2;
+        }
+      }
       if (this.endcon === 1 && this.endtimer > 45) {
         if (global.flag) { global.flag[50] = 0; global.flag[51] = 1; }
         for (const a of instancesOf('obj_attackpress')) instance_destroy(a);
@@ -311,7 +321,7 @@ export class KnightEnemy extends MonsterParent {
     for (const t of instancesOf('obj_tensionbar')) { t.alarm[5] = 15; t.hspeed = -10; t.friction = -0.4; }
     this.user3();
     global.fighting = 0;
-    if (global.batmusic?.[1]) mus_volume(global.batmusic[1], 0, 90);
+    musVolume(0, 90);
   }
   stepBlock() {
     if (this.blockanim === 1) {
@@ -702,6 +712,7 @@ export class KnightEnemy extends MonsterParent {
         }
         this.end_cutscene_version = 1;
         this.endcon = 1;
+        musVolume(0, 1); // mus_fade(global.batmusic[1], 1)
         const inst = instance_create(this.x, this.y, 'obj_shake');
         if (inst.alive) {
           inst.shakex = 30;

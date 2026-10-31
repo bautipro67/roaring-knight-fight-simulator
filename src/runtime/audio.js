@@ -1,5 +1,5 @@
 // WebAudio playback with the Deltarune snd_* / mus_* wrapper semantics.
-import { assets, audioReady, loadMusic } from './assets.js?v=20261031163132';
+import { assets, audioReady, loadMusic } from './assets.js?v=20261031165601';
 
 let ctx = null;
 let master = null;
@@ -163,16 +163,21 @@ export function mus_play(stream) {
   return stream.voice;
 }
 
+// The music functions take the stream or the Voice mus_loop_ext returned (global.batmusic[1]).
+const voiceOf = s => (s instanceof Voice ? s : s?.voice);
+
 export function mus_volume(stream, vol, frames = 0) {
-  stream?.voice?.setVolume(vol, frames);
+  voiceOf(stream)?.setVolume(vol, frames);
 }
 
 export function mus_pitch(stream, pitch) {
-  stream?.voice?.setPitch(pitch);
+  voiceOf(stream)?.setPitch(pitch);
 }
 
 export function mus_stop(stream) {
-  if (stream?.voice) {
+  if (stream instanceof Voice) {
+    stream.stop();
+  } else if (stream?.voice) {
     stream.voice.stop();
     stream.voice = null;
   }

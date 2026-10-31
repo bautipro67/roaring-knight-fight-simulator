@@ -2,8 +2,8 @@
 // obj_regularbullet, and the scripts scr_bullet_init / scr_bullet_inherit / scr_childbullet.
 import {
   Instance, defineObject, defineScript, instance_destroy, instance_exists, S,
-} from '../runtime/gm.js?v=20261031163132';
-import { view_x, view_y, cameray, scr_bullet_init, scr_bullet_inherit, scr_childbullet } from './common.js?v=20261031163132';
+} from '../runtime/gm.js?v=20261031165601';
+import { view_x, view_y, cameray, scr_bullet_init, scr_bullet_inherit, scr_childbullet } from './common.js?v=20261031165601';
 
 export class BulletParent extends Instance {}
 defineObject('obj_bulletparent', BulletParent);
@@ -18,7 +18,7 @@ export class CollideBullet extends BulletParent {
     if (this.active == 1) {
       if (this.target !== 3) S.scr_damage(this);
       if (this.target === 3) S.scr_damage_all(this);
-      if (this.destroyonhit === 1) instance_destroy(this);
+      if (this.destroyonhit == 1) instance_destroy(this);
     }
   }
 }
@@ -35,14 +35,14 @@ export class RegularBullet extends CollideBullet {
     this.bottomfade = 0;
   }
   step() {
-    if (this.wall_destroy === 1) {
+    if (this.wall_destroy == 1) {
       if (this.x < view_x() - 80) instance_destroy(this);
       if (this.x > view_x() + 760) instance_destroy(this);
       if (this.y < view_y() - 80) instance_destroy(this);
       if (this.y > view_y() + 580) instance_destroy(this);
     }
-    if (this.updateimageangle === 1) this.image_angle = this.direction;
-    if (this.spin === 1) this.image_angle += this.spinspeed;
+    if (this.updateimageangle == 1) this.image_angle = this.direction;
+    if (this.spin == 1) this.image_angle += this.spinspeed;
     if (this.bottomfade !== 0 && this.y > cameray() + this.bottomfade) this.image_alpha *= 0.8;
   }
 }

@@ -10,15 +10,15 @@ import {
   draw_self, draw_sprite_ext, draw_sprite, draw_sprite_part_ext, draw_set_blend_mode, draw_set_color, draw_triangle,
   draw_line, draw_surface, draw_surface_ext, draw_surface_part_ext, draw_clear_alpha, surface_create, surface_exists,
   surface_free, surface_set_target, surface_reset_target, sprite_create_from_surface, draw_rectangle,
-  sprite_get_xoffset, sprite_get_yoffset, getSprite, S,
-} from '../../runtime/gm.js?v=20261031163132';
-import { snd_play, snd_stop } from '../../runtime/audio.js?v=20261031163132';
+  sprite_get_xoffset, sprite_get_yoffset, getSprite, draw_sprite_tiled_ext, S,
+} from '../../runtime/gm.js?v=20261031165601';
+import { snd_play, snd_stop } from '../../runtime/audio.js?v=20261031165601';
 import {
   first, enemyRef, camerax, cameray, screenx, screeny, gt_minx, gt_miny, clamp01, remap, scr_ease_in, scr_ease_out,
   scr_movetowards, scr_approach, scr_bullet_init, scr_bullet_inherit, scr_precise_hit, scr_dark_marker,
   scr_afterimage, scr_bulletparent_count, scr_lerp_var_instance, snd_play_x, snd_play_pitch,
-} from '../common.js?v=20261031163132';
-import { BulletParent, CollideBullet, RegularBullet } from '../bullets.js?v=20261031163132';
+} from '../common.js?v=20261031165601';
+import { BulletParent, CollideBullet, RegularBullet } from '../bullets.js?v=20261031165601';
 
 const remap_clamped = (a, b, c, d, v) => clamp(remap(a, b, c, d, v), Math.min(c, d), Math.max(c, d));
 const inverselerp = (a, b, v) => (b === a ? 0 : (v - a) / (b - a));
@@ -170,7 +170,12 @@ class BoxsplitterAttack extends BulletParent {
       const size = lerp(4, 0, ease);
       const length = clamp01(s.timer / 30) * 90;
       draw_sprite_ext('spr_pxwhite10_center', 0, 71 + s.xoffset, 71 + s.yoffset, length, size, spin + s.image_angle + s.angleoffset, backing, 1);
-      // TODO: the scrolling spr_knight_bullet_flow texture masked onto the line (bm_dest_alpha blend).
+      // gpu_set_blendmode_ext(bm_dest_alpha, bm_dest_alpha): the scrolling texture only where the line
+      // is. Canvas has no such factor pair; source-atop is the closest (over the line, not added to it).
+      draw_set_blend_mode('source-atop');
+      draw_sprite_tiled_ext('spr_knight_bullet_flow', 2, s.timer, s.timer, 0.25, 0.25, s.image_blend, 1);
+      draw_sprite_tiled_ext('spr_knight_bullet_flow', 2, -s.timer + 40, -s.timer + 40, 0.25, 0.25, s.image_blend, 1);
+      draw_set_blend_mode(0);
     }
     surface_reset_target();
     draw_set_blend_mode(1);

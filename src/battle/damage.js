@@ -1,9 +1,9 @@
 // Party damage, down state, revive/heal, enemy targeting, game over trigger.
 import {
   global, G, defineScript, S, instance_create, instance_exists, withObj, choose, round, ceil,
-} from '../runtime/gm.js?v=20261031163132';
-import { snd_play, snd_stop, snd_free_all } from '../runtime/audio.js?v=20261031163132';
-import { withInst, knightEnemy } from './common.js?v=20261031163132';
+} from '../runtime/gm.js?v=20261031165601';
+import { snd_play, snd_stop, snd_free_all } from '../runtime/audio.js?v=20261031165601';
+import { withInst, knightEnemy } from './common.js?v=20261031165601';
 
 const g = global;
 
@@ -92,7 +92,11 @@ defineScript('scr_damage', (inst) => {
           if (g.hp[3] < 1 && inst.target == 2) inst.target += 1;
           if (inst.target > 2) inst.target = 0;
         }
-        if (!hasMantle(inst.target + 1)) knight.damagecounter = 0;
+        // GML precedence: `target == 0 && chararmor1[1] == 23 || chararmor2[1] == 23` (no parentheses),
+        // so a ShadowMantle in anyone's second armor slot keeps the counter from resetting.
+        const a1 = g.chararmor1, a2 = g.chararmor2, t = inst.target;
+        if (!((t == 0 && a1[1] == 23) || a2[1] == 23 || (t == 1 && a1[2] == 23) || a2[2] == 23
+          || (t == 2 && a1[3] == 23) || a2[3] == 23)) knight.damagecounter = 0;
       }
     }
   }
@@ -150,8 +154,10 @@ defineScript('scr_damage', (inst) => {
       const ct = g.char[hpi];
       inst.chartarget = ct;
       if (g.hp[ct] >= 0) {
-        let td = S.scr_damage_calculation(inst.tdamage, hpi);
-        if (knight && hasMantle(hpi + 1)) td = round(td * 0.33);
+        // As in the GML, tdamage carries over: each hero's defense and mantle reduce it further.
+        inst.tdamage = S.scr_damage_calculation(inst.tdamage, hpi);
+        if (knight && hasMantle(hpi + 1)) inst.tdamage = round(inst.tdamage * 0.33);
+        const td = inst.tdamage;
         if (g.charaction[hpi] == 10) g.hp[ct] -= ceil(3 * td / 4);
         else g.hp[ct] -= td;
         if (g.hp[ct] <= 0) g.hp[ct] = round(-g.maxhp[0] / 2);
@@ -298,7 +304,7 @@ defineScript('scr_damage_maxhp', (inst, frac = 1, ignoreDefend = false, neverKil
       chartarget = g.char[hpi];
       if (g.hp[chartarget] >= 0) {
         // TODO: scr_element_damage_reduction is not ported (no elemental armour here).
-        const td = S.scr_damage_calculation(tdamage, hpi);
+        const td = tdamage = S.scr_damage_calculation(tdamage, hpi); // carries over, as in the GML
         if (g.charaction[hpi] == 10) g.hp[chartarget] -= ceil(3 * td / 4);
         else g.hp[chartarget] -= td;
         if (g.hp[chartarget] <= 0) g.hp[chartarget] = round(-g.maxhp[0] / 2);

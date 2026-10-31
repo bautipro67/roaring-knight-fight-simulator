@@ -12,8 +12,9 @@ import {
   draw_rectangle, draw_sprite_ext, lerp, lengthdir_x, lengthdir_y, angle_difference, collision_point, collision_circle,
   collision_rectangle, d3d_set_fog, draw_set_blend_mode, gpu_get_blendmode, sprite_get_width, sprite_get_height,
   sprite_get_xoffset, sprite_get_yoffset, draw_triangle_color, draw_circle, draw_get_alpha, merge_color, random, S,
-} from '../runtime/gm.js?v=20261031163132';
-import { snd_play, snd_volume, snd_pitch } from '../runtime/audio.js?v=20261031163132';
+  defineScript,
+} from '../runtime/gm.js?v=20261031165601';
+import { snd_play, snd_volume, snd_pitch } from '../runtime/audio.js?v=20261031165601';
 
 export const VIEW_W = 640;
 export const VIEW_H = 480;
@@ -79,6 +80,19 @@ export function defineShared(name, cls) {
 
 // A script provided by the battle modules if they registered it, else the local version.
 export const callOr = (name, fallback) => (...args) => (name in S ? S[name](...args) : fallback(...args));
+
+// scr_armorcheck_equipped_party(armor): how many armour slots of the party (global.char) hold it.
+export function scr_armorcheck_equipped_party(armor) {
+  let n = 0;
+  for (let i = 0; i < 3; i++) {
+    const c = global.char?.[i];
+    if (c == null || c == 0) continue;
+    if (global.chararmor1?.[c] == armor) n += 1;
+    if (global.chararmor2?.[c] == armor) n += 1;
+  }
+  return n;
+}
+if (!('scr_armorcheck_equipped_party' in S)) defineScript('scr_armorcheck_equipped_party', scr_armorcheck_equipped_party);
 
 // ---------------------------------------------------------------- maths (Chapter 3 scripts)
 

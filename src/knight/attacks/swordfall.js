@@ -3,15 +3,15 @@
 // Also obj_knight_diamondswordbullet_ext (sword bullet used by other patterns).
 import {
   G, global, S, defineObject, instance_create, instance_destroy, random, irandom, clamp, point_direction,
-  angle_difference, make_color_rgb, irandom_range, draw_sprite_ext, draw_self,
-} from '../../runtime/gm.js?v=20261031163132';
-import { snd_play, snd_stop, snd_volume } from '../../runtime/audio.js?v=20261031163132';
+  angle_difference, make_color_rgb, irandom_range, draw_sprite_ext, draw_self, instancesOf,
+} from '../../runtime/gm.js?v=20261031165601';
+import { snd_play, snd_stop, snd_volume } from '../../runtime/audio.js?v=20261031165601';
 import {
   first, enemyRef, boardRef, heartRef, camerax, scr_get_box, scr_lerpvar, scr_script_delayed, scr_var, scr_approach,
   scr_afterimage, scr_afterimagefast, scr_afterimage_grow, scr_bullet_init, scr_darksize, scr_bulletparent_count,
   scr_bullet_inherit, scr_at_player, snd_play_x,
-} from '../common.js?v=20261031163132';
-import { BulletParent, RegularBullet } from '../bullets.js?v=20261031163132';
+} from '../common.js?v=20261031165601';
+import { BulletParent, RegularBullet } from '../bullets.js?v=20261031165601';
 
 // GML truthiness: a real is true when > 0.5 (alarms read -1 when off).
 const on = v => v > 0.5;
@@ -61,7 +61,7 @@ export class KnightSwordfall extends BulletParent {
     }
     if (tt === 'end') {
       const e = enemyRef();
-      for (const w of [first('obj_knight_warp')].filter(Boolean)) {
+      for (const w of instancesOf('obj_knight_warp')) {
         w.x = camerax() + 444;
         w.y = e.ystart;
       }
@@ -384,6 +384,7 @@ export class DiamondSwordBulletExt extends RegularBullet {
       }
       // Damage without the parent's destroy-on-hit (Other_15 does not call event_inherited).
       if (this.target !== 3) S.scr_damage(this);
+      if (this.target === 3) S.scr_damage_all(this);
     }
   }
   animationEnd() { this.image_index = 1; }
