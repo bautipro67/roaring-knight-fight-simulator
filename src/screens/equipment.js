@@ -4,12 +4,12 @@ import {
   Instance, defineObject, instance_create, instance_destroy, up_p, down_p, left_p, right_p,
   button1_p, button2_p, draw_set_font, draw_set_color, draw_set_halign, draw_text, draw_sprite_ext,
   fa_left, fa_center,
-} from '../runtime/gm.js?v=20261031172539';
-import { snd_play } from '../runtime/audio.js?v=20261031172539';
+} from '../runtime/gm.js?v=20261031203735';
+import { snd_play } from '../runtime/audio.js?v=20261031203735';
 import {
   WEAPONS, ARMORS, ITEMS, ITEM_SLOTS, CHAR_NAMES, getLoadout, saveLoadout, resetLoadout,
   weaponChoices, armorChoices, itemChoices, charStats,
-} from '../battle/equipment.js?v=20261031172539';
+} from '../battle/equipment.js?v=20261031203735';
 
 const HEADS = { 1: 'spr_headkris', 2: 'spr_headsusie', 3: 'spr_headralsei' };
 const cycle = (list, cur, dir) => list[(list.indexOf(cur) + dir + list.length) % list.length];
@@ -40,7 +40,7 @@ class EquipmentMenu extends Instance {
       lo.gear[this.char][0] = cycle(weaponChoices(this.char), lo.gear[this.char][0], dir);
     } else if (this.cur === 2 || this.cur === 3) {
       const slot = this.cur - 1;
-      lo.gear[this.char][slot] = cycle(armorChoices(this.char), lo.gear[this.char][slot], dir);
+      lo.gear[this.char][slot] = cycle(armorChoices(this.char, slot), lo.gear[this.char][slot], dir);
     } else return false;
     saveLoadout();
     this.msg = '';
