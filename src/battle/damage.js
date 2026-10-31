@@ -1,9 +1,9 @@
 // Party damage, down state, revive/heal, enemy targeting, game over trigger.
 import {
   global, G, defineScript, S, instance_create, instance_exists, withObj, choose, round, ceil,
-} from '../runtime/gm.js?v=20261031150323';
-import { snd_play, snd_stop, snd_free_all } from '../runtime/audio.js?v=20261031150323';
-import { withInst, knightEnemy } from './common.js?v=20261031150323';
+} from '../runtime/gm.js?v=20261031153429';
+import { snd_play, snd_stop, snd_free_all } from '../runtime/audio.js?v=20261031153429';
+import { withInst, knightEnemy } from './common.js?v=20261031153429';
 
 const g = global;
 
@@ -184,6 +184,134 @@ defineScript('scr_damage_all', (inst) => {
     inst.target = temptarget;
     S.scr_damage_check();
   }
+});
+
+// scr_damage_maxhp(fraction = 1, ignore_defend = false, never_kill = false): bullet scope; takes
+// a fraction of the target's max HP (used by the Knight's big slashes).
+defineScript('scr_damage_maxhp', (inst, frac = 1, ignoreDefend = false, neverKill = false) => {
+  const debug_inv = g.chemg_god_mode ?? 0;
+  if (!(g.inv < 0 && debug_inv == 0)) return;
+  S.scr_damage_cache();
+  if (inst.target < 3) {
+    if (g.hp[g.char[inst.target]] <= 0) {
+      S.scr_randomtarget_old(inst);
+      inst.target = inst.mytarget;
+      withInst(g.charinstance[inst.target], h => { h.image_blend = 0xffffff; h.darkify = 0; });
+    }
+  }
+  let remtarget = -1;
+  if (inst.target == 4) {
+    remtarget = 4;
+    S.scr_randomtarget_old(inst);
+    inst.target = inst.mytarget;
+    for (let k = 0; k < 2; k++) {
+      if (g.hp[g.char[inst.target]] / g.maxhp[g.char[inst.target]] < S.scr_party_hpaverage() / 2) {
+        S.scr_randomtarget_old(inst);
+        inst.target = inst.mytarget;
+      }
+    }
+    if (inst.target == 0 && g.hp[g.char[inst.target]] / g.maxhp[g.char[inst.target]] < 0.35) {
+      S.scr_randomtarget_old(inst);
+      inst.target = inst.mytarget;
+    }
+    withInst(g.charinstance[inst.target], h => { h.image_blend = 0xffffff; h.darkify = 0; });
+  }
+  inst.chartarget = 3;
+  const knight = knightEnemy();
+  if (knight && !instance_exists('obj_knight_roaring2') && knight.aoedamage == 0) {
+    if (inst.target == 0) {
+      if (g.hp[2] > 0 && g.hp[3] > 0) inst.target = choose(1, 2);
+      else if (g.hp[2] > 0) inst.target = 1;
+      else if (g.hp[3] > 0) inst.target = 2;
+    }
+    if (knight.myattackchoice != 13 && (hasMantle(1) || hasMantle(2) || hasMantle(3))) {
+      knight.damagecounter = (knight.damagecounter || 0) + 1;
+      if (knight.damagecounter < 3) {
+        if (g.hp[1] > 0 && hasMantle(1)) inst.target = 0;
+        if (g.hp[2] > 0 && hasMantle(2)) inst.target = 1;
+        if (g.hp[3] > 0 && hasMantle(3)) inst.target = 2;
+      } else {
+        inst.target = choose(0, 1, 2);
+        for (let k = 0; k < 2; k++) {
+          if (g.hp[1] < 1 && inst.target == 0) inst.target += 1;
+          if (g.hp[2] < 1 && inst.target == 1) inst.target += 1;
+          if (g.hp[3] < 1 && inst.target == 2) inst.target += 1;
+          if (inst.target > 2) inst.target = 0;
+        }
+        if (!hasMantle(inst.target + 1)) knight.damagecounter = 0;
+      }
+    }
+    if (inst.target < 3 && hasMantle(inst.target + 1)) frac /= 2;
+  }
+  let chartarget = g.char[inst.target];
+  inst.chartarget = chartarget;
+  let tdamage = ceil(g.maxhp[chartarget] * frac);
+  if (g.charaction[inst.target] == 10 && !ignoreDefend) tdamage = ceil(tdamage / 1.5);
+  if (neverKill) tdamage = Math.max(1, Math.min(tdamage, g.hp[chartarget] - 1));
+  // Simulator option: Easy Mode halves the damage the party takes.
+  if (G.settings?.easy) tdamage = Math.max(1, ceil(tdamage / 2));
+  inst.tdamage = tdamage;
+  if (!instance_exists('obj_shake')) instance_create(0, 0, 'obj_shake');
+  withInst(g.charinstance[inst.target], h => { h.hurt = 1; h.hurttimer = 0; });
+  inst.hpdiff = tdamage;
+  withObj('obj_dmgwriter', d => { if (d.delaytimer >= 1) d.killactive = 1; });
+  let doomtype = -1;
+  withObj('obj_heart', h => { h.dmgnoise = 1; });
+  if (inst.target < 3) {
+    if (g.hp[chartarget] <= 0) {
+      doomtype = 4;
+      g.hp[chartarget] -= round(tdamage / 4);
+      inst.hpdiff = round(tdamage / 4);
+    } else {
+      g.hp[chartarget] -= tdamage;
+      if (g.hp[chartarget] <= 0) {
+        if (knight) {
+          if (g.hp[1] < 0) {
+            g.hp[1] = 1;
+            inst.hpdiff = round(g.hp[chartarget] - 1);
+            doomtype = 4;
+            S.scr_battle_sprite_set('kris', 'spr_kris_fallen_dark', 0.25, true);
+          } else {
+            doomtype = 12;
+            inst.hpdiff = round(g.hp[chartarget] + 999);
+            g.hp[chartarget] = -999;
+            S.scr_dead(inst.target);
+          }
+        } else {
+          inst.hpdiff = Math.abs(g.hp[chartarget] - g.maxhp[chartarget] / 2);
+          doomtype = 4;
+          g.hp[chartarget] = round(-g.maxhp[chartarget] / 2);
+          S.scr_dead(inst.target);
+        }
+      }
+    }
+    const h = g.charinstance[inst.target];
+    if (h) {
+      const dw = instance_create(h.x, h.y + h.myheight - 24, 'obj_dmgwriter');
+      dw.damage = inst.hpdiff;
+      dw.type = doomtype;
+      inst.dmgwriter = dw;
+    }
+  }
+  if (inst.target == 3) {
+    for (let hpi = 0; hpi < 3; hpi++) {
+      chartarget = g.char[hpi];
+      if (g.hp[chartarget] >= 0) {
+        // TODO: scr_element_damage_reduction is not ported (no elemental armour here).
+        const td = S.scr_damage_calculation(tdamage, hpi);
+        if (g.charaction[hpi] == 10) g.hp[chartarget] -= ceil(3 * td / 4);
+        else g.hp[chartarget] -= td;
+        if (g.hp[chartarget] <= 0) g.hp[chartarget] = round(-g.maxhp[0] / 2);
+      }
+    }
+  }
+  g.inv = g.invc * 30;
+  S.scr_damage_check();
+  let gameover = 1;
+  for (let i = 0; i < 3; i++) if (g.char[i] != 0 && g.hp[g.char[i]] > 0) gameover = 0;
+  if (knight) gameover = 0; // as in scr_damage here: the Knight decides at turn end
+  if (gameover == 1) S.scr_gameover();
+  if (remtarget != -1) inst.target = remtarget;
 });
 
 // Achievement bookkeeping in the original; kept for the cache only.

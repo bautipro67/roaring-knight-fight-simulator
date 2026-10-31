@@ -4,19 +4,18 @@
 // - Crescent slashes (type 109): obj_bullet_knight_crescentGenerator (the Knight slashes from
 //   the right of the box, moving between rows), obj_bullet_knightcrescent (each half-moon) and
 //   obj_knight_crescentslash_slashinganimation (the slash animation).
-// Not ported: obj_knight_combinations (type 105), as it chains obj_roaringknight_quickslash_attack,
-// obj_knight_tunnel_slasher_2_revised and obj_knight_weird_bottom_manager, which are not ported.
+// The combination attack (type 105, obj_knight_combinations) is in combination.js.
 import {
   global, Instance, defineObject, instance_create, instance_destroy, instance_exists, instancesOf, irandom, irandom_range,
   random_range, choose, round, clamp, lerp, abs, merge_color, draw_self, draw_line, c_white, c_black,
-} from '../rt.js?v=20261031150323';
+} from '../rt.js?v=20261031153429';
 import {
   first, i_ex, enemyRef, boardRef, heartRef, scr_bullet_init, scr_darksize, scr_lerpvar, scr_afterimage, scr_dark_marker,
   scr_doom, snd_play_x, eq,
-} from '../common.js?v=20261031150323';
-import { BulletParent, RegularBullet } from '../bullets.js?v=20261031150323';
-import { snd_stop } from '../../runtime/audio.js?v=20261031150323';
-import './rotating.js?v=20261031150323'; // obj_knight_warp
+} from '../common.js?v=20261031153429';
+import { BulletParent, RegularBullet } from '../bullets.js?v=20261031153429';
+import { snd_stop } from '../../runtime/audio.js?v=20261031153429';
+import './rotating.js?v=20261031153429'; // obj_knight_warp
 
 // ---------------------------------------------------------------- diagonal bullets
 
