@@ -1,11 +1,11 @@
 // MAGIC / ITEM / SPARE resolution: obj_spellphase, scr_spelltext, scr_spell and the spell effects.
 import {
   global, Instance, defineObject, defineScript, S, instance_create, instance_destroy, instance_exists,
-  instance_find, withObj, event_user, random, ceil, merge_color, point_direction, point_distance,
+  instance_find, withObj, event_user, random, ceil, round, merge_color, point_direction, point_distance,
   angle_difference, button1_p, draw_self, draw_sprite_ext, d3d_set_fog,
-} from '../runtime/gm.js?v=20261031153429';
-import { snd_play, snd_stop } from '../runtime/audio.js?v=20261031153429';
-import { withInst, subst, knightEnemy } from './common.js?v=20261031153429';
+} from '../runtime/gm.js?v=20261031163132';
+import { snd_play, snd_stop } from '../runtime/audio.js?v=20261031163132';
+import { withInst, subst, knightEnemy } from './common.js?v=20261031163132';
 
 const g = global;
 
@@ -425,7 +425,7 @@ class RudeBusterBolt extends Instance {
       this.direction = this.direction + angle_difference(dir, this.direction) / 4;
       this.image_angle = this.direction;
       if (point_distance(this.x, this.y, this.cx, this.cy) <= 40) {
-        this.final_bolt = this.chosen_bolt;
+        this.final_bolt = this.bolt_timer;
         this.visible = false;
         this.explode = 1;
         this.t = 1;
@@ -441,6 +441,7 @@ class RudeBusterBolt extends Instance {
         }
         if (this.red == 1) this.damage += 90;
         g.hittarget[this.star] = 0;
+        if (knightEnemy()) this.damage = round(this.damage / 2);
         S.scr_damage_enemy(this, this.star, this.damage);
         if (g.monstertype[0] != 20) {
           withInst(this.target, tg => {

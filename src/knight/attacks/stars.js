@@ -5,15 +5,16 @@ import {
   G, global, defineObject, instance_create, instance_destroy, instancesOf, random_range, irandom, irandom_range, choose,
   lerp, merge_color, angle_difference, point_direction, lengthdir_x, lengthdir_y, round, sprite_get_width, sprite_get_height,
   draw_self, draw_sprite_ext, draw_sprite_part_ext, draw_set_blend_mode, draw_set_color, draw_set_alpha, draw_rectangle,
-  draw_primitive_begin, draw_vertex, draw_primitive_end, snd_play,
-} from '../rt.js?v=20261031153429';
+  draw_primitive_begin, draw_vertex, draw_primitive_end, snd_play, draw_sprite, surface_create, surface_exists,
+  surface_free, surface_set_target, surface_reset_target, draw_clear_alpha, draw_surface,
+} from '../rt.js?v=20261031163132';
 import {
-  first, enemyRef, camerax, cameray, scr_movetowards, scr_ease_in, scr_ease_out, scr_afterimage, scr_custom_afterimage,
+  first, enemyRef, camerax, cameray, screenx, screeny, scr_movetowards, scr_ease_in, scr_ease_out, scr_afterimage, scr_custom_afterimage,
   scr_childbullet, scr_precise_hit, scr_draw_beam_color, scr_draw_outline, scr_pingpong, scr_rotatetowards, scr_angle_lerp,
   scr_onscreen_tolerance, clamp01, remap, gt_maxx, snd_play_x, snd_play_pitch,
-} from '../common.js?v=20261031153429';
-import { BulletParent, CollideBullet, RegularBullet } from '../bullets.js?v=20261031153429';
-import { S } from '../../runtime/gm.js?v=20261031153429';
+} from '../common.js?v=20261031163132';
+import { BulletParent, CollideBullet, RegularBullet } from '../bullets.js?v=20261031163132';
+import { S } from '../../runtime/gm.js?v=20261031163132';
 
 class PointingCone extends BulletParent {
   constructor() {
@@ -21,6 +22,8 @@ class PointingCone extends BulletParent {
     this.sprite_index = 'spr_roaringknight_point_ol';
   }
   create() {
+    this.surf = -4;
+    this.starsurf = -4;
     this.angle = 0;
     this.target_angle = 60;
     this.bg_x = 0;
@@ -50,6 +53,8 @@ class PointingCone extends BulletParent {
     this.endtimer = 120;
   }
   cleanUp() {
+    if (surface_exists(this.surf)) surface_free(this.surf);
+    if (surface_exists(this.starsurf)) surface_free(this.starsurf);
     const k = first('obj_knight_enemy');
     if (k && !k.visible) {
       k.visible = true;
@@ -135,6 +140,8 @@ class PointingCone extends BulletParent {
       if (this.con >= 1) this.afterimage_spread += 1;
     }
     if (this.con >= 4) return;
+    if (!surface_exists(this.surf)) this.surf = surface_create(640, 480);
+    if (!surface_exists(this.starsurf)) this.starsurf = surface_create(640, 480);
     const cx = camerax(), w = (this.x + 22 - cx) / 2;
     if (this.con <= 1) {
       if (this.con === 0) this.con = 1;
@@ -163,27 +170,61 @@ class PointingCone extends BulletParent {
       if (this.timer === 0) this.con = 4;
       return;
     }
-    // TODO: the original renders the cone into a surface (flow lines clipped to the cone, SOUL and
-    // stars cut out, scanline grate) and adds it to the screen; here the cone is a translucent
-    // additive triangle with the flow sprite.
+    // The cone is drawn into a screen-sized surface and added to the screen.
+    surface_set_target(this.surf);
+    draw_clear_alpha(0, 0);
+    draw_set_blend_mode(0);
+    draw_set_alpha(1);
+    draw_set_color(merge_color(0xffffff, 0, this.angle / this.target_angle));
     this.draw_angle = 1 - this.draw_angle;
     const ang = this.angle > 0 ? this.angle + this.draw_angle : 0;
-    const ax = this.x + 22, ay = this.y + 56;
+    const ax = screenx(this.x + 22), ay = screeny(this.y);
     const xl = lengthdir_x(600, 180 + ang / 2), yt = lengthdir_y(600, 180 - ang / 2), yb = lengthdir_y(600, 180 + ang / 2);
+    const cone = () => {
+      draw_primitive_begin(4); // pr_trianglelist: the 4th vertex is ignored, as in GML
+      draw_vertex(ax + xl, ay + 56 + yt);
+      draw_vertex(ax, ay + 56);
+      draw_vertex(ax + xl, ay + 58 + yb);
+      draw_vertex(ax, ay + 58);
+      draw_primitive_end();
+    };
+    cone();
+    // sepalpha(bm_src_alpha, bm_one, bm_dest_alpha, bm_zero) + alpha test: the flow is added
+    // inside the cone only (canvas: add, then cut back to the cone).
     draw_set_blend_mode(1);
-    draw_set_alpha(0.35);
-    draw_set_color(merge_color(0xffffff, 0x404040, this.angle / this.target_angle));
-    draw_primitive_begin(4);
-    draw_vertex(ax + xl, ay + yt);
-    draw_vertex(ax, ay);
-    draw_vertex(ax + xl, ay + 2 + yb);
-    draw_primitive_end();
-    draw_set_alpha(1);
-    draw_set_blend_mode(0);
+    draw_sprite_ext('spr_knight_bullet_flow', 0, this.bg_x, 0, 2, 2, 0, 0xffffff, 1);
+    draw_sprite_ext('spr_knight_bullet_flow', 0, this.bg_x + 640, 0, 2, 2, 0, 0xffffff, 1);
+    draw_sprite_ext('spr_knight_bullet_flow', 1, this.lines_x, 0, 2, 2, 0, 0xffffff, 1);
+    draw_sprite_ext('spr_knight_bullet_flow', 1, this.lines_x + 640, 0, 2, 2, 0, 0xffffff, 1);
+    draw_set_blend_mode('destination-in');
+    cone();
     this.lines_x -= 80;
     this.bg_x -= 20;
     if (this.lines_x < -640) this.lines_x += 640;
     if (this.bg_x < -640) this.bg_x += 640;
+    // The SOUL is cut out of the cone.
+    draw_set_blend_mode(3);
+    for (const h of instancesOf('obj_heart')) draw_sprite(h.sprite_index, h.image_index, screenx(h.x), screeny(h.y));
+    const stars = instancesOf('obj_knight_pointing_star');
+    if (stars.length) {
+      surface_set_target(this.starsurf);
+      draw_set_blend_mode(0);
+      draw_clear_alpha(0, 0);
+      for (const s of stars) if (s.image_xscale > 0.5) s.user0();
+      draw_set_blend_mode(3);
+      draw_sprite_ext('spr_knight_line_grate', 0, 0, this.star_flicker, 2, 2, 0, 0, 1);
+      this.star_flicker = 2 - this.star_flicker;
+      draw_set_blend_mode(0);
+      for (const s of stars) if (s.image_xscale <= 0.5) s.user0();
+      surface_reset_target();
+      // sepalpha(bm_src_alpha, bm_inv_src_alpha, bm_dest_alpha, bm_zero): stars only inside the cone.
+      draw_set_blend_mode('source-atop');
+      draw_surface(this.starsurf, 0, 0);
+    }
+    draw_set_blend_mode(1);
+    surface_reset_target();
+    draw_surface(this.surf, cx, cameray());
+    draw_set_blend_mode(0);
   }
 }
 defineObject('obj_knight_pointing_cone', PointingCone);
@@ -212,6 +253,12 @@ class PointingStar extends CollideBullet {
     this.side = 0;
     this.init = false;
     this.dir = choose(-1, 1);
+  }
+  // Other_10: drawn by obj_knight_pointing_cone into its surface.
+  user0() {
+    const xs = (this.sprite_width + 16) / sprite_get_width(this.sprite_index);
+    const ys = (this.sprite_height + 16) / sprite_get_height(this.sprite_index);
+    draw_sprite_ext(this.sprite_index, 0, screenx(this.x), screeny(this.y), xs, ys, 0, 0xffffff, 1);
   }
   user5() {
     this.target = 3;
@@ -303,8 +350,7 @@ class PointingStar extends CollideBullet {
     const ys = (this.sprite_height + 16) / sprite_get_height(this.sprite_index);
     const color = merge_color(0x808080, 0xff0000, clamp01(this.timer / 30));
     const alpha = (Math.sin(this.timer * 3) + 1) * 0.25;
-    // The star itself (the original also draws it into the cone's surface: Other_10).
-    if (this.con === 0) draw_sprite_ext(this.sprite_index, 0, this.x, this.y, xs, ys, 0, 0xffffff, 1);
+    // At con 0 the star is only drawn by the cone, into its surface (user0).
     if (this.con === 2 || this.con === 3) {
       let a = 1, len = 120, prog = clamp01(this.timer / 30);
       if (this.con === 2) {

@@ -8,13 +8,13 @@ import {
   instancesOf, event_user, choose, keyboard_check, keyboard_check_pressed, random_set_seed, round, S,
   draw_set_font, draw_set_halign, draw_set_color, draw_set_alpha, draw_rectangle, draw_text, draw_sprite_ext,
   fa_left, fa_center, merge_color, button1_p, vk, draw_self,
-} from '../runtime/gm.js?v=20261031153429';
-import { snd_play, snd_init, mus_loop_ext, mus_stop, snd_stop } from '../runtime/audio.js?v=20261031153429';
-import { audioReady, assets } from '../runtime/assets.js?v=20261031153429';
-import { gotoRoom } from '../screens/common.js?v=20261031153429';
-import { getBest, saveBest } from '../settings.js?v=20261031153429';
-import { drawSoulHat } from '../hats.js?v=20261031153429';
-import { tagParent } from '../knight/common.js?v=20261031153429';
+} from '../runtime/gm.js?v=20261031163132';
+import { snd_play, snd_init, mus_loop_ext, mus_stop, snd_stop } from '../runtime/audio.js?v=20261031163132';
+import { audioReady, assets } from '../runtime/assets.js?v=20261031163132';
+import { gotoRoom } from '../screens/common.js?v=20261031163132';
+import { getBest, saveBest } from '../settings.js?v=20261031163132';
+import { drawSoulHat } from '../hats.js?v=20261031163132';
+import { tagParent } from '../knight/common.js?v=20261031163132';
 
 // The Knight's turns in fight order: [myattackchoice, difficulty, name, object the attack needs].
 // Only the attacks whose objects are ported are listed (ATTACKS).
@@ -630,6 +630,11 @@ function setupArena(controllerName, attackIndex) {
     h.myself = i;
     h.depth = 200 - i * 20;
     global.charinstance[i] = h;
+  }
+  // The ACT tables the battle controller normally allocates; scr_monstersetup fills them.
+  for (const s of ['', 'sus', 'ral', 'noe']) {
+    for (const n of ['canact', 'actactor', 'actcost', 'actsimul']) global[n + s] ??= Array.from({ length: 3 }, () => Array(6).fill(0));
+    for (const n of ['actname', 'actdesc']) global[n + s] ??= Array.from({ length: 3 }, () => Array(6).fill(' '));
   }
   const knight = instance_create(425, 78, 'obj_knight_enemy');
   knight.myself = 0;

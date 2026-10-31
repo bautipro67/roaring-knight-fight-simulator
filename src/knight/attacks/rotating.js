@@ -9,13 +9,13 @@ import {
   draw_sprite_ext, draw_self, draw_set_alpha, draw_triangle_color, draw_line_width_color, draw_circle_color,
   gpu_set_blendmode, surface_create, surface_exists, surface_free, surface_set_target, surface_reset_target,
   draw_clear_alpha, draw_surface, draw_surface_ext, snd_play, snd_loop, snd_stop, c_red, c_black, c_white,
-} from '../rt.js?v=20261031153429';
+} from '../rt.js?v=20261031163132';
 import {
   first, i_ex, enemyRef, heartRef, boardRef, camerax, cameray, scr_get_box, scr_approach, scr_lerpvar, scr_script_delayed,
   scr_var, scr_var_delayed, scr_afterimage, scr_bullet_init, scr_bullet_inherit, scr_darksize, scr_bulletparent_count,
   scr_heartclamp, snd_play_x,
-} from '../common.js?v=20261031153429';
-import { BulletParent, CollideBullet } from '../bullets.js?v=20261031153429';
+} from '../common.js?v=20261031163132';
+import { BulletParent, CollideBullet } from '../bullets.js?v=20261031163132';
 
 // GML truthiness: a real is true when > 0.5 (alarms read -1 when off).
 const on = v => v > 0.5;
@@ -644,7 +644,11 @@ export class KnightCircle extends Instance {
 register('obj_knight_circle', KnightCircle);
 
 // ---------------------------------------------------------------- obj_afterimage_screen
-// application_surface is the canvas as drawn so far this frame.
+// application_surface is the canvas as drawn so far this frame. GameMaker also writes alpha into
+// application_surface, so when an echo copies the echoes drawn before it, those come out much
+// fainter; on the opaque canvas they would stack into a blur. The echoes drawn in one frame and
+// pass therefore all copy the screen as it was before the first of them.
+const echoCapture = { key: null, surface: null };
 
 export class AfterimageScreen extends Instance {
   create() {
@@ -669,16 +673,20 @@ export class AfterimageScreen extends Instance {
     if (this.alpha === 0) instance_destroy(this);
   }
   capture() {
-    const screen = G.ctx.canvas;
-    if (!surface_exists(this.my_surface)) this.my_surface = surface_create(640, 480);
-    const c = this.my_surface.ctx;
-    c.save();
-    c.setTransform(1, 0, 0, 1, 0, 0);
-    c.globalAlpha = 1;
-    c.globalCompositeOperation = 'copy';
-    c.drawImage(screen, 0, 0, screen.width, screen.height, 0, 0, 640, 480);
-    c.restore();
-    draw_surface_ext(this.my_surface, this.x - this.anchor_x * this.xscale, this.y - this.anchor_y * this.yscale, this.xscale, this.yscale, 0, c_white, this.alpha);
+    const key = G.frame + (this.draw_end ? 'e' : 'd');
+    if (echoCapture.key !== key) {
+      echoCapture.key = key;
+      if (!surface_exists(echoCapture.surface)) echoCapture.surface = surface_create(640, 480);
+      const screen = G.ctx.canvas;
+      const c = echoCapture.surface.ctx;
+      c.save();
+      c.setTransform(1, 0, 0, 1, 0, 0);
+      c.globalAlpha = 1;
+      c.globalCompositeOperation = 'copy';
+      c.drawImage(screen, 0, 0, screen.width, screen.height, 0, 0, 640, 480);
+      c.restore();
+    }
+    draw_surface_ext(echoCapture.surface, this.x - this.anchor_x * this.xscale, this.y - this.anchor_y * this.yscale, this.xscale, this.yscale, 0, c_white, this.alpha);
   }
   draw() {
     if (this.draw_end) return;
