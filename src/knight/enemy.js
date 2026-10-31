@@ -6,12 +6,12 @@ import {
   G, global, Instance, defineObject, instance_create, instance_create_depth, instance_destroy, instance_exists, instancesOf,
   choose, random, merge_color, make_color_hsv, draw_sprite_ext, d3d_set_fog, keyboard_check_pressed, button3_p,
   snd_play, snd_stop, mus_volume, draw_sprite_tiled_ext, bgr, S,
-} from './rt.js?v=20261031170934';
+} from './rt.js?v=20261031172539';
 import {
   first, camerax, cameray, i_ex, callOr, scr_lerpvar, scr_doom, snd_play_x, move_towards_point, tagParent,
-} from './common.js?v=20261031170934';
-import { scr_bulletspawner } from './dbullet.js?v=20261031170934';
-import { point_distance, objectExists } from '../runtime/gm.js?v=20261031170934';
+} from './common.js?v=20261031172539';
+import { scr_bulletspawner } from './dbullet.js?v=20261031172539';
+import { point_distance, objectExists } from '../runtime/gm.js?v=20261031172539';
 
 const MonsterParent = tagParent('obj_monsterparent');
 
@@ -442,7 +442,7 @@ export class KnightEnemy extends MonsterParent {
     global.typer = 75;
     const s = first('obj_herosusie');
     S.scr_enemyblcon(this, s ? s.x + 92 : 180, s ? s.y + 38 : 190, 14);
-    S.scr_guardpeek(this, 'obj_herosusie');
+    S.scr_guardpeek('obj_herosusie');
     if (this.myblcon && this.myblcon.alive) this.myblcon.depth = this.depth - 100;
   }
   // global.mnfight == 1.5: choose the attack, make the box and send the SOUL in.

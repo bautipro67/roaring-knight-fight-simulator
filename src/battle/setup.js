@@ -4,11 +4,11 @@
 import {
   global, G, Instance, defineObject, defineScript, S, instance_create, room_reset, objectExists,
   font_add_sprite_ext,
-} from '../runtime/gm.js?v=20261031170934';
-import { snd_free_all, snd_init } from '../runtime/audio.js?v=20261031170934';
-import { WEAPONS, ARMORS, BASE_STATS, getLoadout } from './equipment.js?v=20261031170934';
-import { arr, arr2, view_x, view_y, splitCaller } from './common.js?v=20261031170934';
-import { registerBackground } from './misc.js?v=20261031170934';
+} from '../runtime/gm.js?v=20261031172539';
+import { snd_free_all, snd_init } from '../runtime/audio.js?v=20261031172539';
+import { WEAPONS, ARMORS, BASE_STATS, getLoadout } from './equipment.js?v=20261031172539';
+import { arr, arr2, view_x, view_y, splitCaller } from './common.js?v=20261031172539';
+import { registerBackground } from './misc.js?v=20261031172539';
 
 function scr_gamestart() {
   global.chapter = 3;
