@@ -8,13 +8,13 @@ import {
   instancesOf, event_user, choose, keyboard_check, keyboard_check_pressed, random_set_seed, round, S,
   draw_set_font, draw_set_halign, draw_set_color, draw_set_alpha, draw_rectangle, draw_text, draw_sprite_ext,
   fa_left, fa_center, merge_color, button1_p, vk, draw_self,
-} from '../runtime/gm.js?v=20261031165601';
-import { snd_play, snd_init, mus_loop_ext, mus_stop, snd_stop } from '../runtime/audio.js?v=20261031165601';
-import { audioReady, assets } from '../runtime/assets.js?v=20261031165601';
-import { gotoRoom } from '../screens/common.js?v=20261031165601';
-import { getBest, saveBest } from '../settings.js?v=20261031165601';
-import { drawSoulHat } from '../hats.js?v=20261031165601';
-import { tagParent } from '../knight/common.js?v=20261031165601';
+} from '../runtime/gm.js?v=20261031170934';
+import { snd_play, snd_init, mus_loop_ext, mus_stop, snd_stop } from '../runtime/audio.js?v=20261031170934';
+import { audioReady, assets } from '../runtime/assets.js?v=20261031170934';
+import { gotoRoom } from '../screens/common.js?v=20261031170934';
+import { getBest, saveBest } from '../settings.js?v=20261031170934';
+import { drawSoulHat } from '../hats.js?v=20261031170934';
+import { tagParent } from '../knight/common.js?v=20261031170934';
 
 // The Knight's turns in fight order: [myattackchoice, difficulty, name, object the attack needs].
 // Only the attacks whose objects are ported are listed (ATTACKS).
@@ -418,7 +418,7 @@ defineObject('obj_sandboxcontroller', SandboxController);
 // Score: 1000 per cleared attack, +500 if it was cleared without a hit, plus grazing points
 // earned in the successful attempt, all multiplied by the HP difficulty; each retry costs 300.
 // Practice runs the fight-order attacks (not the unused ones).
-const PRACTICE_COUNT = Math.max(1, ATTACKS.filter(a => FIGHT_ORDER.indexOf(a) < UNUSED_FROM).length);
+export const PRACTICE_COUNT = Math.max(1, ATTACKS.filter(a => FIGHT_ORDER.indexOf(a) < UNUSED_FROM).length);
 export const PRACTICE_HP = [90, 45, 1];
 const HP_MULTIPLIER = { 90: 1, 45: 1.5, 1: 2 };
 const CLEAR_POINTS = 1000, PERFECT_POINTS = 500, RETRY_PENALTY = 300, GRAZE_POINTS = 4;
