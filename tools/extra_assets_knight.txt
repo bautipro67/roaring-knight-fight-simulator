@@ -1,0 +1,50 @@
+# Extra assets for the Knight and the bullet phase (spr:/snd:/font:/text: per line)
+# board / SOUL (Chapter 3)
+spr: ^spr_battlebg_stretch
+spr: ^spr_dodgeheart
+spr: ^spr_hiddenheart
+spr: spr_yheart_charge
+# generic effects used by the attacks
+spr: ^spr_pixel_white
+spr: ^spr_pxwhite
+spr: ^spr_whitepx
+spr: spr_whitepixel
+spr: spr_lasergun_laser_telegraph
+spr: spr_lasergun_laser_telegraph_mask
+spr: spr_lasergun_laser
+spr: spr_sunbolt
+spr: spr_thrash_missile_explosion
+spr: spr_ball_small_pixel_hitbox
+spr: spr_sneo_bigcircle
+spr: spr_smallbullet
+spr: spr_nothing
+spr: spr_roaring_fire2
+spr: ^spr_diamondbullet
+# the fight's background (obj_bgfountaintest)
+spr: spr_bg_fountain1
+spr: spr_bg_knight_gradient
+spr: spr_cc_fountainbg_white
+# Susie's unhappy battle sprites set by obj_knight_enemy
+spr: spr_susie_dw_fell
+spr: spr_susier_dark_unhappy
+spr: ^spr_susieb_.*_unhappy
+spr: spr_susieb_idle_serious
+spr: spr_susieb_attack_serious
+spr: spr_kris_fallen_dark
+# sounds
+snd: snd_bell
+snd: snd_explosion_firework
+snd: snd_rocket_long
+snd: snd_stardrop
+snd: snd_wideslash_low
+snd: snd_heavy_passing
+snd: snd_object_passing
+snd: snd_jump
+snd: snd_smallswing
+snd: snd_drake_dodge
+snd: snd_locker
+snd: snd_shinka_ambience
+snd: snd_error
+snd: snd_coin
+snd: snd_chargeshot_fire
+snd: snd_chargeshot_charge

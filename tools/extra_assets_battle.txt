@@ -1,0 +1,13 @@
+# Extra assets for the battle system (spr:/snd:/font:/text: per line)
+# Chapter 3 Ralsei (no hat) battle and overworld sprites
+spr:^spr_ralsei_(idle|defend|defend_peek|hurt_fixed|attackready|attack|item|itemready|spellready|spell|defeat|victory|actready|act|battleintro|walk_right|walk_right_unhappy|shock)$
+# Susie for the Knight fight, the encounter transition
+spr:^spr_(susie_dw_fell|susie_defend_peek|susier_dark_unhappy|susie_walk_right_dw_unhappy|susier_wall|kris_sword_jump_down)$
+# Text box faces (Susie and Ralsei, Chapter 2+)
+spr:^spr_face_(susie_alt|r_nohat|placeholder)$
+# The Knight fight background (obj_bgfountaintest)
+spr:^spr_(bg_fountain1|bg_knight_gradient|cc_fountainbg_white)$
+# FIGHT hits, TP bar, game over
+spr:^spr_(attack_cut1|attack_shard|tensionbar_cutout|savepoint|gameoverbg)$
+spr:IMAGE_SOUL_BLUR
+snd:^snd_(weaponpull_fast|bell|cardrive|heal_c|break1|break2|error|mercyadd|spellcast|petrify|escaped)$
