@@ -48,3 +48,6 @@ snd: snd_error
 snd: snd_coin
 snd: snd_chargeshot_fire
 snd: snd_chargeshot_charge
+# sword tunnel / rotating slash / Roaring
+spr: spr_nomask
+snd: snd_leaf_dodge

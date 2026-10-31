@@ -6,14 +6,14 @@ import {
   lerp, merge_color, angle_difference, point_direction, lengthdir_x, lengthdir_y, round, sprite_get_width, sprite_get_height,
   draw_self, draw_sprite_ext, draw_sprite_part_ext, draw_set_blend_mode, draw_set_color, draw_set_alpha, draw_rectangle,
   draw_primitive_begin, draw_vertex, draw_primitive_end, snd_play,
-} from '../rt.js?v=20261031025310';
+} from '../rt.js?v=20261031150323';
 import {
   first, enemyRef, camerax, cameray, scr_movetowards, scr_ease_in, scr_ease_out, scr_afterimage, scr_custom_afterimage,
   scr_childbullet, scr_precise_hit, scr_draw_beam_color, scr_draw_outline, scr_pingpong, scr_rotatetowards, scr_angle_lerp,
   scr_onscreen_tolerance, clamp01, remap, gt_maxx, snd_play_x, snd_play_pitch,
-} from '../common.js?v=20261031025310';
-import { BulletParent, CollideBullet, RegularBullet } from '../bullets.js?v=20261031025310';
-import { S } from '../../runtime/gm.js?v=20261031025310';
+} from '../common.js?v=20261031150323';
+import { BulletParent, CollideBullet, RegularBullet } from '../bullets.js?v=20261031150323';
+import { S } from '../../runtime/gm.js?v=20261031150323';
 
 class PointingCone extends BulletParent {
   constructor() {
@@ -218,7 +218,7 @@ class PointingStar extends CollideBullet {
     this.damage = 75;
     const k = first('obj_knight_enemy');
     if (k) k.aoedamage = true;
-    if (this.active === 1 && scr_precise_hit(this, 3)) {
+    if (this.active == 1 && scr_precise_hit(this, 3)) {
       S.scr_damage_all(this);
       if (this.destroyonhit === 1) instance_destroy(this);
     }
@@ -379,7 +379,7 @@ class PointingStarchild extends RegularBullet {
     const k = first('obj_knight_enemy');
     if (k) k.aoedamage = true;
     const h = first('obj_heart');
-    if (this.active === 1 && h && scr_precise_hit(this, h.sprite_index === 'spr_dodgeheart_smaller_2px' ? 1 : 5)) {
+    if (this.active == 1 && h && scr_precise_hit(this, h.sprite_index === 'spr_dodgeheart_smaller_2px' ? 1 : 5)) {
       if (first('obj_knight_roaring2')) k?.user2();
       else S.scr_damage_all(this);
       if (this.destroyonhit === 1) instance_destroy(this);

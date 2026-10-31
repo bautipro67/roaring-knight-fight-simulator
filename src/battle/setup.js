@@ -4,30 +4,11 @@
 import {
   global, G, Instance, defineObject, defineScript, S, instance_create, room_reset, objectExists,
   font_add_sprite_ext,
-} from '../runtime/gm.js?v=20261031025310';
-import { snd_free_all, snd_init } from '../runtime/audio.js?v=20261031025310';
-import { arr, arr2, view_x, view_y, splitCaller } from './common.js?v=20261031025310';
-import { registerBackground } from './misc.js?v=20261031025310';
-
-// scr_weaponinfo / scr_armorinfo (Chapter 3): id -> [at, df, mag].
-const WEAPONS = {
-  0: [0, 0, 0], 1: [0, 0, 0], 2: [0, 0, 0], 3: [0, 0, 0], 5: [2, 0, 0], 6: [2, 0, 0], 7: [5, 0, 4], 8: [4, 0, 0],
-  9: [2, 0, 0], 10: [0, 0, 2], 11: [16, 0, 0], 14: [2, 1, 0], 15: [1, 0, 2], 16: [4, 0, 0], 17: [4, 0, 0],
-  18: [3, 0, 2], 19: [5, 0, -1], 21: [10, 0, -6], 23: [6, 0, 0], 24: [6, 0, 0], 25: [4, 0, 1], 26: [16, 0, 0],
-};
-const ARMORS = {
-  0: [0, 0, 0], 1: [0, 1, 0], 2: [0, 2, 0], 3: [0, 1, 0], 4: [0, 2, 0], 5: [1, 2, 0], 6: [0, 0, 2], 7: [2, 2, 2],
-  8: [0, 2, 0], 9: [0, 3, 0], 10: [0, 2, 0], 11: [0, 3, 0], 12: [0, 2, 1], 13: [2, 1, 0], 14: [0, 2, 0],
-  15: [0, 2, 0], 18: [0, 1, 0], 19: [3, 1, 0], 20: [1, 1, 1], 21: [0, 5, 5], 22: [0, 3, 1], 24: [0, 2, 0],
-  25: [0, 3, 0], 26: [0, 1, 1], 27: [0, 5, -2],
-};
-// End of Chapter 3: Saber10 / ToxicAxe / FlexScarf with the chapter's starting Amber Card + GlowWrist.
-const LOADOUT = { 1: [23, 1, 10], 2: [24, 1, 10], 3: [25, 1, 10] };
-// Stats after the chapter's battles (scr_levelup caps: 200 / 240 / 180 HP, +2 attack).
-const STATS = { 1: { hp: 200, at: 16, mag: 0 }, 2: { hp: 240, at: 20, mag: 4 }, 3: { hp: 180, at: 14, mag: 13 } };
-// Chapter 3 consumables: DeluxeDinner, ExecBuffet, ReviveMint, ReviveDust, TensionGem, TensionBit,
-// TVDinner, TVSlop, LightCandy, ButJuice.
-const INVENTORY = [39, 38, 2, 30, 28, 27, 34, 37, 23, 24];
+} from '../runtime/gm.js?v=20261031150323';
+import { snd_free_all, snd_init } from '../runtime/audio.js?v=20261031150323';
+import { WEAPONS, ARMORS, BASE_STATS, getLoadout } from './equipment.js?v=20261031150323';
+import { arr, arr2, view_x, view_y, splitCaller } from './common.js?v=20261031150323';
+import { registerBackground } from './misc.js?v=20261031150323';
 
 function scr_gamestart() {
   global.chapter = 3;
@@ -143,23 +124,25 @@ defineScript('init_battle_globals', () => {
   global.char = [1, 2, 3];
   global.darkzone = 1;
   global.plot = 320;
+  // The equipment and items chosen on the EQUIPMENT screen (src/battle/equipment.js).
+  const loadout = getLoadout();
   for (const c of [1, 2, 3]) {
-    const st = STATS[c];
-    global.maxhp[c] = global.hp[c] = st.hp;
-    global.at[c] = st.at;
-    global.mag[c] = st.mag;
-    const [w, a1, a2] = LOADOUT[c];
+    const [hp, at, , mag] = BASE_STATS[c];
+    global.maxhp[c] = global.hp[c] = hp;
+    global.at[c] = at;
+    global.mag[c] = mag;
+    const [w, a1, a2] = loadout.gear[c];
     global.charweapon[c] = w;
     global.chararmor1[c] = a1;
     global.chararmor2[c] = a2;
     // scr_weaponinfo_mine / scr_armorinfo_mine
-    [WEAPONS[w] ?? [0, 0, 0], ARMORS[a1] ?? [0, 0, 0], ARMORS[a2] ?? [0, 0, 0]].forEach((s, slot) => {
-      global.itemat[c][slot] = s[0];
-      global.itemdf[c][slot] = s[1];
-      global.itemmag[c][slot] = s[2];
+    [WEAPONS[w], ARMORS[a1], ARMORS[a2]].forEach((s, slot) => {
+      global.itemat[c][slot] = s[1];
+      global.itemdf[c][slot] = s[2];
+      global.itemmag[c][slot] = s[3];
     });
   }
-  INVENTORY.forEach((it, i) => { global.item[i] = it; });
+  loadout.items.filter(id => id).forEach((it, i) => { global.item[i] = it; });
   global.knight_battle_items = global.item.slice();
   S.scr_spellinfo_all();
   global.hpfont = font_add_sprite_ext('spr_numbersfontsmall', '0123456789-+', false, 2);

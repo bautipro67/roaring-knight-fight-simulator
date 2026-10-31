@@ -2,8 +2,8 @@
 // obj_regularbullet, and the scripts scr_bullet_init / scr_bullet_inherit / scr_childbullet.
 import {
   Instance, defineObject, defineScript, instance_destroy, instance_exists, S,
-} from '../runtime/gm.js?v=20261031025310';
-import { view_x, view_y, cameray, scr_bullet_init, scr_bullet_inherit, scr_childbullet } from './common.js?v=20261031025310';
+} from '../runtime/gm.js?v=20261031150323';
+import { view_x, view_y, cameray, scr_bullet_init, scr_bullet_inherit, scr_childbullet } from './common.js?v=20261031150323';
 
 export class BulletParent extends Instance {}
 defineObject('obj_bulletparent', BulletParent);
@@ -14,7 +14,8 @@ defineObject('obj_bulletgenparent', BulletGenParent);
 // Anything the SOUL can touch. Other_15 (event_user(5)) is called by obj_heart's collision.
 export class CollideBullet extends BulletParent {
   user5() {
-    if (this.active === 1) {
+    // GML booleans are numbers: some ported bullets store true/false, so compare loosely.
+    if (this.active == 1) {
       if (this.target !== 3) S.scr_damage(this);
       if (this.target === 3) S.scr_damage_all(this);
       if (this.destroyonhit === 1) instance_destroy(this);

@@ -5,9 +5,9 @@ import {
   Instance, defineObject, instance_create, instance_destroy, instance_exists, instancesOf, merge_color, round,
   draw_sprite_ext, draw_self, draw_clear_alpha, surface_create, surface_set_target, surface_reset_target, surface_free,
   sprite_create_from_surface, sprite_exists, sprite_delete, getSprite, clamp,
-} from '../runtime/gm.js?v=20261031025310';
-import { first, scr_movetowards, heartRef } from './common.js?v=20261031025310';
-import { BulletParent } from './bullets.js?v=20261031025310';
+} from '../runtime/gm.js?v=20261031150323';
+import { first, scr_movetowards, heartRef } from './common.js?v=20261031150323';
+import { BulletParent } from './bullets.js?v=20261031150323';
 
 // Nine-slice borders of the stretchable box sprites (left, top, right, bottom).
 export function setupNineSlices() {
@@ -24,6 +24,8 @@ export class Growtangle extends BattleSolid {
     super();
     this.sprite_index = 'spr_battlebg_0';
     this.mask_index = 'spr_battlebg_0';
+    // object_get_depth (__global_object_depths): behind the SOUL (depth 1).
+    this.depth = 5;
   }
   create() {
     setupNineSlices();

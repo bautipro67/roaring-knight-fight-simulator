@@ -9,7 +9,7 @@
 // - Colours are 0xRRGGBB numbers. GML literals are BGR: wrap them in bgr(0x...).
 // - Angles are degrees, counter-clockwise; y points down (same as GameMaker).
 // - `global` holds GML globals: global.tension, global.hp[...] etc.
-import { assets, spriteMask } from './assets.js?v=20261031025310';
+import { assets, spriteMask } from './assets.js?v=20261031150323';
 
 export const global = {};
 export const ROOM_W = 640;
@@ -127,9 +127,10 @@ export function isA(inst, name) {
   return false;
 }
 
-export function instance_create(x, y, name) {
+export function instance_create(x, y, name, depth) {
   const cls = classFor(name);
   const inst = new cls();
+  if (depth !== undefined) inst.depth = depth; // before Create, as in GameMaker
   inst.x = inst.xstart = inst.xprevious = x;
   inst.y = inst.ystart = inst.yprevious = y;
   G.instances.push(inst);
@@ -138,11 +139,7 @@ export function instance_create(x, y, name) {
   G.other = prevOther;
   return inst;
 }
-export const instance_create_depth = (x, y, depth, name) => {
-  const i = instance_create(x, y, name);
-  i.depth = depth;
-  return i;
-};
+export const instance_create_depth = (x, y, depth, name) => instance_create(x, y, name, depth);
 
 // instance_destroy(inst, false) skips the Destroy event; CleanUp (cleanUp method) always runs.
 export function instance_destroy(inst, runDestroy = true) {

@@ -6,12 +6,12 @@ import {
   G, global, Instance, defineObject, instance_create, instance_create_depth, instance_destroy, instance_exists, instancesOf,
   choose, random, merge_color, make_color_hsv, draw_sprite_ext, d3d_set_fog, keyboard_check_pressed, button3_p,
   snd_play, snd_stop, mus_volume, draw_sprite_tiled_ext, bgr, S,
-} from './rt.js?v=20261031025310';
+} from './rt.js?v=20261031150323';
 import {
   first, camerax, cameray, i_ex, callOr, scr_lerpvar, scr_doom, snd_play_x, move_towards_point, tagParent,
-} from './common.js?v=20261031025310';
-import { scr_bulletspawner } from './dbullet.js?v=20261031025310';
-import { point_distance } from '../runtime/gm.js?v=20261031025310';
+} from './common.js?v=20261031150323';
+import { scr_bulletspawner } from './dbullet.js?v=20261031150323';
+import { point_distance, objectExists } from '../runtime/gm.js?v=20261031150323';
 
 const MonsterParent = tagParent('obj_monsterparent');
 
@@ -41,8 +41,16 @@ function msgnext(s) {
   global.msg[global.msgno] = s;
 }
 const writerExists = () => i_ex('obj_writer');
-// myattackchoice values whose attacks are ported: 1 Stars, 2 Flurry, 10 Swords falling.
-const PORTED_CHOICES = new Set([1, 2, 10]);
+// The objects each myattackchoice needs: a choice counts as ported once its attack module has
+// registered them (a missing or failed module only disables that attack).
+const CHOICE_OBJECTS = {
+  0: ['obj_bullet_knight_crescentGenerator'], 1: ['obj_knight_pointing_cone'], 2: ['obj_roaringknight_boxsplitter_attack'],
+  5: ['obj_knight_rotating_slash'], 7: ['obj_knight_combinations'], 9: ['obj_knight_roaring2'], 10: ['obj_knight_swordfall'],
+  11: ['obj_tracking_swords_manager'], 12: ['obj_diagonal_bullet_manager'], 13: ['obj_sword_tunnel_manager'],
+  14: ['obj_tracking_swords_manager'], 15: ['obj_sword_vortex_manager', 'obj_tracking_swords_manager'],
+  16: ['obj_knight_rotating_slash', 'obj_tracking_swords_manager'], 17: ['obj_tracking_swords_manager'],
+};
+const PORTED_CHOICES = { has: c => !!CHOICE_OBJECTS[c] && CHOICE_OBJECTS[c].every(objectExists) };
 
 export class KnightEnemy extends MonsterParent {
   constructor() {

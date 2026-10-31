@@ -12,8 +12,8 @@ import {
   draw_rectangle, draw_sprite_ext, lerp, lengthdir_x, lengthdir_y, angle_difference, collision_point, collision_circle,
   collision_rectangle, d3d_set_fog, draw_set_blend_mode, gpu_get_blendmode, sprite_get_width, sprite_get_height,
   sprite_get_xoffset, sprite_get_yoffset, draw_triangle_color, draw_circle, draw_get_alpha, merge_color, random, S,
-} from '../runtime/gm.js?v=20261031025310';
-import { snd_play, snd_volume, snd_pitch } from '../runtime/audio.js?v=20261031025310';
+} from '../runtime/gm.js?v=20261031150323';
+import { snd_play, snd_volume, snd_pitch } from '../runtime/audio.js?v=20261031150323';
 
 export const VIEW_W = 640;
 export const VIEW_H = 480;
@@ -810,8 +810,8 @@ class ShakeObj extends Instance {
     } else instance_destroy(this);
   }
   step() {
-    if (this.active === 0) instance_destroy(this);
-    if (this.active === 1) {
+    if (this.active == 0) instance_destroy(this);
+    if (this.active == 1) {
       if (this.target && this.target.alive) {
         this.shakeamt -= this.shakereduct;
         this.on *= -1;
@@ -889,7 +889,7 @@ class Shake extends Instance {
     }
   }
   step() {
-    if (this.active === 0) {
+    if (this.active == 0) {
       this.beenset = 1;
       this.mycamerax = G.camX;
       this.mycameray = G.camY;

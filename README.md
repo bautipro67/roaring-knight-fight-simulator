@@ -10,6 +10,7 @@ Play the Roaring Knight boss fight from **DELTARUNE Chapter 3** for free in your
 - Every attack of the Knight, with the SOUL, grazing and TP.
 - The battle logic is ported from the original game, so it plays like the real fight.
 - **Practice mode** (Bad Time Simulator style): dodge the attacks in order; lose your HP bar and the attack restarts, survive it and you move on. Pick the starting attack and 90 / 45 / 1 HP. Scores with ranks and a saved best for full runs. Direct link: [`?practice`](https://bautipro67.github.io/roaring-knight-fight-simulator/?practice).
+- **EQUIPMENT**: pick each character's weapon and armors (any Chapter 3 gear they can use, including the ShadowMantle) and the items you bring into the fight.
 - **OPTIONS**: volume, easy mode (half damage), **SOUL hats** and **CONTROLS** to remap every button on keyboard and gamepad. Options are remembered in the browser.
 - **Pause** with Esc / P (Start on a gamepad): continue, restart, volume, quit to title.
 - **Sandbox mode** to repeat any attack freely: [`?sandbox&attack=0`](https://bautipro67.github.io/roaring-knight-fight-simulator/?sandbox&attack=0) (`[` / `]` switch attacks, `I` invincibility).

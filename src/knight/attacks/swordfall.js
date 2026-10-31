@@ -4,14 +4,14 @@
 import {
   G, global, S, defineObject, instance_create, instance_destroy, random, irandom, clamp, point_direction,
   angle_difference, make_color_rgb, irandom_range, draw_sprite_ext, draw_self,
-} from '../../runtime/gm.js?v=20261031025310';
-import { snd_play, snd_stop, snd_volume } from '../../runtime/audio.js?v=20261031025310';
+} from '../../runtime/gm.js?v=20261031150323';
+import { snd_play, snd_stop, snd_volume } from '../../runtime/audio.js?v=20261031150323';
 import {
   first, enemyRef, boardRef, heartRef, camerax, scr_get_box, scr_lerpvar, scr_script_delayed, scr_var, scr_approach,
   scr_afterimage, scr_afterimagefast, scr_afterimage_grow, scr_bullet_init, scr_darksize, scr_bulletparent_count,
   scr_bullet_inherit, scr_at_player, snd_play_x,
-} from '../common.js?v=20261031025310';
-import { BulletParent, RegularBullet } from '../bullets.js?v=20261031025310';
+} from '../common.js?v=20261031150323';
+import { BulletParent, RegularBullet } from '../bullets.js?v=20261031150323';
 
 // GML truthiness: a real is true when > 0.5 (alarms read -1 when off).
 const on = v => v > 0.5;
@@ -376,7 +376,7 @@ export class DiamondSwordBulletExt extends RegularBullet {
     scr_script_delayed(this, scr_var, 21, 'do_afterimage', 1);
   }
   user5() {
-    if (this.active === 1) {
+    if (this.active == 1) {
       if (!this.shakeme && this.g === 255 && global.inv < 0) {
         if (this.image_angle === 90) scr_lerpvar(this, 'image_angle', this.image_angle, this.image_angle - 10, 6, 1, 'out');
         else if (this.image_angle === 270) scr_lerpvar(this, 'image_angle', this.image_angle, this.image_angle + 10, 6, 1, 'out');
