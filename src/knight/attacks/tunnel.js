@@ -10,12 +10,12 @@ import {
   global, Instance, defineObject, instance_create, instance_create_depth, instance_destroy, instancesOf, irandom, random,
   random_range, choose, lerp, merge_color, lengthdir_x, lengthdir_y, point_direction, max, floor, abs,
   draw_sprite_ext, draw_self, collision_line, snd_stop, snd_is_playing, c_red, c_white,
-} from '../rt.js?v=20261101025537';
+} from '../rt.js?v=20261101031110';
 import {
   first, i_ex, heartRef, enemyRef, camerax, cameray, camerawidth, scr_bullet_init, scr_darksize, scr_lerpvar,
   scr_afterimage, scr_afterimage_grow, scr_anglechange, snd_play_x,
-} from '../common.js?v=20261101025537';
-import { RegularBullet } from '../bullets.js?v=20261101025537';
+} from '../common.js?v=20261101031110';
+import { RegularBullet } from '../bullets.js?v=20261101031110';
 
 class SwordTunnelManager extends RegularBullet {
   create() {

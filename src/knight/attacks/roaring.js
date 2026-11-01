@@ -11,15 +11,15 @@ import {
   draw_set_alpha, draw_set_color, draw_rectangle, draw_circle_color, gpu_set_blendmode, gpu_set_blendmode_ext,
   surface_create, surface_exists, surface_free, surface_set_target, surface_reset_target, draw_clear_alpha,
   draw_surface, draw_surface_ext, snd_play, snd_stop, snd_volume, snd_pitch, c_white, c_black, bgr, S,
-} from '../rt.js?v=20261101025537';
+} from '../rt.js?v=20261101031110';
 import {
   first, i_ex, enemyRef, heartRef, camerax, cameray, camerawidth, cameraheight, screenx, screeny, eq, clamp01, remap,
   scr_approach, scr_ease_out, scr_pingpong, scr_lerpvar, scr_script_delayed, scr_script_repeat, scr_var, scr_afterimage,
   scr_afterimagefast, scr_afterimage_grow, scr_bullet_init, scr_bullet_inherit, scr_darksize, scr_childbullet,
   scr_fire_bullet, scr_precise_hit, scr_draw_beam_color, scr_draw_outline_ext, scr_marker, snd_play_pitch,
-} from '../common.js?v=20261101025537';
-import { BulletParent, RegularBullet } from '../bullets.js?v=20261101025537';
-import './rotating.js?v=20261101025537'; // obj_roaringknight_slash, obj_knight_circle, obj_afterimage_screen
+} from '../common.js?v=20261101031110';
+import { BulletParent, RegularBullet } from '../bullets.js?v=20261101031110';
+import './rotating.js?v=20261101031110'; // obj_roaringknight_slash, obj_knight_circle, obj_afterimage_screen
 
 const gtime = () => global.time ?? G.frame;
 const GRAY_DARK = bgr(4210752); // 0x404040

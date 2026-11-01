@@ -1,6 +1,6 @@
 // obj_endbattle: the party walks back to the overworld spots, then the simulator's ending screen
 // replaces the post-fight cutscene (obj_ch3_PTB02). obj_time also hands a pending game over to its screen.
-import { global, G, Instance, defineObject, S, point_direction, point_distance } from '../runtime/gm.js?v=20261101025537';
+import { global, G, Instance, defineObject, S, point_direction, point_distance } from '../runtime/gm.js?v=20261101031110';
 
 const g = global;
 

@@ -4,14 +4,14 @@
 import {
   G, global, S, defineObject, instance_create, instance_destroy, random, irandom, clamp, point_direction,
   angle_difference, make_color_rgb, irandom_range, draw_sprite_ext, draw_self, instancesOf,
-} from '../../runtime/gm.js?v=20261101025537';
-import { snd_play, snd_stop, snd_volume } from '../../runtime/audio.js?v=20261101025537';
+} from '../../runtime/gm.js?v=20261101031110';
+import { snd_play, snd_stop, snd_volume } from '../../runtime/audio.js?v=20261101031110';
 import {
   first, enemyRef, boardRef, heartRef, camerax, scr_get_box, scr_lerpvar, scr_script_delayed, scr_var, scr_approach,
   scr_afterimage, scr_afterimagefast, scr_afterimage_grow, scr_bullet_init, scr_darksize, scr_bulletparent_count,
   scr_bullet_inherit, scr_at_player, snd_play_x,
-} from '../common.js?v=20261101025537';
-import { BulletParent, RegularBullet } from '../bullets.js?v=20261101025537';
+} from '../common.js?v=20261101031110';
+import { BulletParent, RegularBullet } from '../bullets.js?v=20261101031110';
 
 // GML truthiness: a real is true when > 0.5 (alarms read -1 when off).
 const on = v => v > 0.5;

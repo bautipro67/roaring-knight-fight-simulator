@@ -26,6 +26,10 @@ export const WEAPONS = {
   25: ['FlexScarf', 4, 0, 1, [3], ''],
   26: ['BlackShard', 16, 0, 0, [1], ''],
 };
+// Unlocked with the code TOO HARD (the Codes box on the page). Anyone can use it, but only one
+// party member can hold it at a time.
+export const CODE_WEAPON = 99;
+WEAPONS[CODE_WEAPON] = ['TooHardSword', 40, 10, 20, [1, 2, 3], 'Too hard! One holder at a time'];
 const ALL = [1, 2, 3], KR = [1, 3];
 export const ARMORS = {
   0: ['(none)', 0, 0, 0, ALL, ''],
@@ -112,6 +116,28 @@ let loadout = null;
 
 const usable = (table, id, c) => table[id] && table[id][4].includes(c);
 
+const CODES_KEY = 'knight-sim-codes';
+let codes = null;
+function unlockedCodes() {
+  if (!codes) {
+    try { codes = JSON.parse(localStorage.getItem(CODES_KEY) || '[]'); } catch (e) { codes = []; }
+    if (!Array.isArray(codes)) codes = [];
+  }
+  return codes;
+}
+export const weaponUnlocked = id => id !== CODE_WEAPON || unlockedCodes().includes('TOOHARD');
+
+// A code typed in the page's Codes box: { ok, msg } for the message under it.
+export function redeemCode(text) {
+  const code = String(text || '').toUpperCase().replace(/\s+/g, '');
+  if (code !== 'TOOHARD') return { ok: false, msg: 'That code does nothing.' };
+  if (!unlockedCodes().includes(code)) {
+    codes.push(code);
+    try { localStorage.setItem(CODES_KEY, JSON.stringify(codes)); } catch (e) { /* not saved */ }
+  }
+  return { ok: true, msg: 'TooHardSword unlocked! Equip it in EQUIPMENT on the title screen (one character at a time).' };
+}
+
 export function getLoadout() {
   if (!loadout) {
     let saved = null;
@@ -120,7 +146,7 @@ export function getLoadout() {
     if (saved?.gear) {
       for (const c of [1, 2, 3]) {
         const [w, a1, a2] = saved.gear[c] || [];
-        if (usable(WEAPONS, w, c)) loadout.gear[c][0] = w;
+        if (usable(WEAPONS, w, c) && weaponUnlocked(w)) loadout.gear[c][0] = w;
         if (usable(ARMORS, a1, c)) loadout.gear[c][1] = a1;
         if (usable(ARMORS, a2, c)) loadout.gear[c][2] = a2;
       }
@@ -134,6 +160,12 @@ export function getLoadout() {
         if (worn.has(id)) loadout.gear[c][slot] = 0;
         worn.add(id);
       }
+    }
+    let holder = false;
+    for (const c of [1, 2, 3]) {
+      if (loadout.gear[c][0] !== CODE_WEAPON) continue;
+      if (holder) loadout.gear[c][0] = DEFAULT_LOADOUT.gear[c][0];
+      holder = true;
     }
     if (Array.isArray(saved?.items)) {
       loadout.items = Array.from({ length: ITEM_SLOTS }, (_, i) => (ITEMS[saved.items[i]] ? saved.items[i] : 0));
@@ -152,7 +184,8 @@ export function resetLoadout() {
 }
 
 // Options for a slot: the weapons or armors that character can use, or the items.
-export const weaponChoices = c => Object.keys(WEAPONS).map(Number).filter(id => usable(WEAPONS, id, c));
+export const weaponChoices = c => Object.keys(WEAPONS).map(Number).filter(id => usable(WEAPONS, id, c) && weaponUnlocked(id)
+  && !(id === CODE_WEAPON && [1, 2, 3].some(o => o !== c && getLoadout().gear[o][0] === id)));
 export function armorChoices(c, slot) {
   const lo = getLoadout();
   const elsewhere = id => [1, 2, 3].some(o => [1, 2].some(s => (o !== c || s !== slot) && lo.gear[o][s] === id));
