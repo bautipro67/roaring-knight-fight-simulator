@@ -99,10 +99,10 @@ export const CHAR_NAMES = { 1: 'KRIS', 2: 'SUSIE', 3: 'RALSEI' };
 export const BASE_STATS = { 1: [200, 16, 2, 0], 2: [240, 20, 2, 4], 3: [180, 14, 2, 13] };
 
 // What the party carries when they meet the Knight: Saber10 / ToxicAxe / FlexScarf, Amber Card,
-// GlowWrist; and DeluxeDinner, ExecBuffet, ReviveMint, ReviveDust, TensionGem, TensionBit,
-// TVDinner, TVSlop, LightCandy, ButJuice.
+// GlowWrist (Susie wears the ShadowMantle instead); and DeluxeDinner, ExecBuffet, ReviveMint,
+// ReviveDust, TensionGem, TensionBit, TVDinner, TVSlop, LightCandy, ButJuice.
 export const DEFAULT_LOADOUT = {
-  gear: { 1: [23, 1, 10], 2: [24, 1, 10], 3: [25, 1, 10] },
+  gear: { 1: [23, 1, 10], 2: [24, 1, 23], 3: [25, 1, 10] },
   items: [39, 38, 2, 30, 28, 27, 34, 37, 23, 24, 0, 0],
 };
 

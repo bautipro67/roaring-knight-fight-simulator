@@ -4,10 +4,10 @@ import {
   G, S, defineScript, instance_exists, instancesOf, inputLatch, up_p, down_p, left_p, right_p,
   button1_p, button2_p, pause_p, draw_set_font, draw_set_color, draw_set_alpha, draw_set_halign,
   draw_rectangle, draw_text, draw_sprite_ext, fa_center, fa_left,
-} from './runtime/gm.js?v=20261031203735';
-import { audioSuspend, audioResume } from './runtime/audio.js?v=20261031203735';
-import { saveSettings, applyVolume } from './settings.js?v=20261031203735';
-import { scr_darkbox } from './screens/common.js?v=20261031203735';
+} from './runtime/gm.js?v=20261101025537';
+import { audioSuspend, audioResume } from './runtime/audio.js?v=20261101025537';
+import { saveSettings, applyVolume } from './settings.js?v=20261101025537';
+import { scr_darkbox } from './screens/common.js?v=20261101025537';
 
 let menu = null;
 
@@ -63,10 +63,10 @@ function leave(then) {
 
 async function restart(context) {
   if (context === 'practice') {
-    const { startPractice } = await import('./debug/sandbox.js?v=20261031203735');
+    const { startPractice } = await import('./debug/sandbox.js?v=20261101025537');
     startPractice(G.lastPractice || {});
   } else {
-    const { startBattle } = await import('./battle/setup.js?v=20261031203735');
+    const { startBattle } = await import('./battle/setup.js?v=20261101025537');
     startBattle({ intro: G.settings?.intro !== false });
   }
 }
