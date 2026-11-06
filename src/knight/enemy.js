@@ -6,12 +6,12 @@ import {
   G, global, Instance, defineObject, instance_create, instance_create_depth, instance_destroy, instance_exists, instancesOf,
   choose, random, merge_color, make_color_hsv, draw_sprite_ext, d3d_set_fog, keyboard_check_pressed, button3_p,
   snd_play, snd_stop, mus_volume, draw_sprite_tiled_ext, bgr, S,
-} from './rt.js?v=20261106200046';
+} from './rt.js?v=20261106232406';
 import {
   first, camerax, cameray, i_ex, callOr, scr_lerpvar, scr_doom, snd_play_x, move_towards_point, tagParent,
-} from './common.js?v=20261106200046';
-import { scr_bulletspawner } from './dbullet.js?v=20261106200046';
-import { point_distance, objectExists } from '../runtime/gm.js?v=20261106200046';
+} from './common.js?v=20261106232406';
+import { scr_bulletspawner } from './dbullet.js?v=20261106232406';
+import { point_distance, objectExists } from '../runtime/gm.js?v=20261106232406';
 
 const MonsterParent = tagParent('obj_monsterparent');
 

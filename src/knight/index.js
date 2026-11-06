@@ -1,10 +1,10 @@
 // Imports every Knight / bullet-phase module so their objects and scripts get registered.
-import './common.js?v=20261106200046';
-import './bullets.js?v=20261106200046';
-import './board.js?v=20261106200046';
-import './soul.js?v=20261106200046';
-import './dbullet.js?v=20261106200046';
-import './enemy.js?v=20261106200046';
+import './common.js?v=20261106232406';
+import './bullets.js?v=20261106232406';
+import './board.js?v=20261106232406';
+import './soul.js?v=20261106232406';
+import './dbullet.js?v=20261106232406';
+import './enemy.js?v=20261106232406';
 
 // Attack modules: a missing or broken one only disables that attack.
 // TODO: rotating (type 104), swords (151, 154), tunnel (153), roaring (107), crescent (109) are not ported yet.
