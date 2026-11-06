@@ -8,13 +8,13 @@ import {
   instancesOf, event_user, choose, keyboard_check, keyboard_check_pressed, random_set_seed, round, S,
   draw_set_font, draw_set_halign, draw_set_color, draw_set_alpha, draw_rectangle, draw_text, draw_sprite_ext,
   fa_left, fa_center, merge_color, button1_p, vk, draw_self,
-} from '../runtime/gm.js?v=20261106015139';
-import { snd_play, snd_init, mus_loop_ext, mus_stop, snd_stop } from '../runtime/audio.js?v=20261106015139';
-import { audioReady, assets } from '../runtime/assets.js?v=20261106015139';
-import { gotoRoom } from '../screens/common.js?v=20261106015139';
-import { getBest, saveBest } from '../settings.js?v=20261106015139';
-import { drawSoulHat } from '../hats.js?v=20261106015139';
-import { tagParent } from '../knight/common.js?v=20261106015139';
+} from '../runtime/gm.js?v=20261106200046';
+import { snd_play, snd_init, mus_loop_ext, mus_stop, snd_stop } from '../runtime/audio.js?v=20261106200046';
+import { audioReady, assets } from '../runtime/assets.js?v=20261106200046';
+import { gotoRoom } from '../screens/common.js?v=20261106200046';
+import { getBest, saveBest } from '../settings.js?v=20261106200046';
+import { drawSoulHat } from '../hats.js?v=20261106200046';
+import { tagParent } from '../knight/common.js?v=20261106200046';
 
 // The Knight's turns in fight order: [myattackchoice, difficulty, name, object the attack needs].
 // Only the attacks whose objects are ported are listed (ATTACKS).
@@ -220,7 +220,7 @@ const HeroParent = tagParent('obj_heroparent');
 const HERO = {
   1: { tag: 'obj_herokris', idle: 'spr_krisb_idle', hurt: 'spr_krisb_hurt', down: 'spr_krisb_defeat', w: 68, h: 74 },
   2: { tag: 'obj_herosusie', idle: 'spr_susieb_idle', hurt: 'spr_susieb_hurt', down: 'spr_susieb_defeat', w: 70, h: 82 },
-  3: { tag: 'obj_heroralsei', idle: 'spr_ralseib_idle', hurt: 'spr_ralseib_idle', down: 'spr_ralseib_defeat', w: 52, h: 86 },
+  3: { tag: 'obj_heroralsei', idle: 'spr_ralsei_idle', hurt: 'spr_ralsei_hurt_fixed', down: 'spr_ralsei_defeat', w: 52, h: 86 },
 };
 const heroClasses = {};
 for (const [c, h] of Object.entries(HERO)) {
@@ -240,6 +240,7 @@ for (const [c, h] of Object.entries(HERO)) {
       this.state = 0;
     }
     step() {
+      this.siner = (this.siner || 0) + 1;
       if (this.hurt) {
         this.hurttimer += 1;
         if (this.hurttimer > 15) this.hurt = 0;
@@ -251,7 +252,11 @@ for (const [c, h] of Object.entries(HERO)) {
       const down = global.hp[this.char] <= 0;
       const spr = down ? h.down : this.hurt ? h.hurt : h.idle;
       const blend = merge_color(0xffffff, 0, Math.max(0, this.darkentimer) / 30);
-      draw_sprite_ext(spr, this.image_index, this.x, this.y, 2, 2, 0, blend, this.image_alpha);
+      // obj_heroparent Draw: idle frames at siner / 5; the hurt pose slides back as hurttimer / 2 grows.
+      const hurtindex = Math.min(2, this.hurttimer / 2);
+      const index = down ? 0 : this.hurt ? hurtindex : this.siner / 5;
+      const x = this.hurt && !down ? this.x - 20 + hurtindex * 10 : this.x;
+      draw_sprite_ext(spr, index, x, this.y, 2, 2, 0, blend, this.image_alpha);
     }
   });
 }
