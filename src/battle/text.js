@@ -5,17 +5,17 @@ import {
   instance_number, withObj, random, button1_p, button2_h, string_length, string_char_at,
   string_insert, string_delete, draw_set_font, draw_set_color, draw_get_color, draw_set_alpha, draw_text,
   draw_text_transformed, draw_text_color, draw_rectangle, draw_sprite_ext, draw_self, button3_h, instancesOf,
-} from '../runtime/gm.js?v=20261101031110';
-import { snd_play } from '../runtime/audio.js?v=20261101031110';
+} from '../runtime/gm.js?v=20261106015139';
+import { snd_play } from '../runtime/audio.js?v=20261106015139';
 
 const sin = Math.sin;
-import { fontName, splitCaller, view_x, view_y } from './common.js?v=20261101031110';
+import { fontName, splitCaller, view_x, view_y } from './common.js?v=20261106015139';
 
 // Text sounds that exist in this build; the others are silent.
 const TEXTSND = {
   snd_text: 'snd_text', snd_txtsus: 'snd_txtsus', snd_txtral: 'snd_txtral', snd_txtjok: 'snd_txtjok',
 };
-import { G } from '../runtime/gm.js?v=20261101031110';
+import { G } from '../runtime/gm.js?v=20261106015139';
 const tsnd = n => TEXTSND[n] ?? null;
 
 // scr_textsetup(font, color, x, y, charline, shake, rate, sound, hspace, vspace, special)

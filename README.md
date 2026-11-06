@@ -17,7 +17,7 @@ Play the Roaring Knight boss fight from **DELTARUNE Chapter 3** for free in your
 - **Sandbox mode** to repeat any attack freely: [`?sandbox&attack=0`](https://bautipro67.github.io/roaring-knight-fight-simulator/?sandbox&attack=0) (`[` / `]` switch attacks, `I` invincibility).
 - Touch controls on phones and tablets, fullscreen button.
 
-Also by the same fan: [Jevil Fight Simulator](https://bautipro67.github.io/jevil-fight-simulator/).
+Also by the same fan: [Jevil Fight Simulator](https://bautipro67.github.io/jevil-fight-simulator/). See [all the DELTARUNE fight simulators](https://bautipro67.github.io/).
 
 ## Controls
 
