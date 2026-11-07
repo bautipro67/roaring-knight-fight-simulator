@@ -9,13 +9,13 @@ import {
   draw_sprite_ext, draw_self, draw_set_alpha, draw_triangle_color, draw_line_width_color, draw_circle_color,
   gpu_set_blendmode, surface_create, surface_exists, surface_free, surface_set_target, surface_reset_target,
   draw_clear_alpha, draw_surface, draw_surface_ext, snd_play, snd_loop, snd_stop, c_red, c_black, c_white,
-} from '../rt.js?v=20261107001915';
+} from '../rt.js?v=20261107140820';
 import {
   first, i_ex, enemyRef, heartRef, boardRef, camerax, cameray, scr_get_box, scr_approach, scr_lerpvar, scr_script_delayed,
   scr_var, scr_var_delayed, scr_afterimage, scr_bullet_init, scr_bullet_inherit, scr_darksize, scr_bulletparent_count,
   scr_heartclamp, snd_play_x,
-} from '../common.js?v=20261107001915';
-import { BulletParent, CollideBullet } from '../bullets.js?v=20261107001915';
+} from '../common.js?v=20261107140820';
+import { BulletParent, CollideBullet } from '../bullets.js?v=20261107140820';
 
 // GML truthiness: a real is true when > 0.5 (alarms read -1 when off).
 const on = v => v > 0.5;

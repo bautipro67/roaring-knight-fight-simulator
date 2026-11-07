@@ -3,8 +3,8 @@
 import {
   global, G, Instance, defineObject, defineScript, S, instance_create, instance_destroy, instance_exists,
   draw_sprite_ext, d3d_set_fog, objectExists, lerp, make_color_hsv, merge_color, instancesOf,
-} from '../runtime/gm.js?v=20261107001915';
-import { splitCaller, draw_sprite_tiled_ext, knightEnemy } from './common.js?v=20261107001915';
+} from '../runtime/gm.js?v=20261107140820';
+import { splitCaller, draw_sprite_tiled_ext, knightEnemy } from './common.js?v=20261107140820';
 
 // Generic effect objects the Knight modules may also register (their Chapter 3 versions win).
 const shared = (name, cls) => { if (!objectExists(name)) defineObject(name, cls); };
@@ -284,7 +284,7 @@ defineScript('scr_lerpvar', (inst, varname, a, b, time) => {
 class BgFountain extends Instance {
   create() {
     this.siner = 0;
-    this.image_blend = 0x272882;
+    this.image_blend = 0x27293f;
     this.battleprog = 0;
     this.alphafactor = 0;
     this.depth = 50000;
@@ -309,7 +309,7 @@ class BgFountain extends Instance {
     if (k) draw_sprite_ext('spr_bg_knight_gradient', 0, shakex + cx + 640 + 640, shakey + cy + 90, -2, 2, 0, 0, af);
     draw_sprite_ext('spr_bg_knight_gradient', 0, shakex + cx, shakey + cy + 90, 2, 2.05, 0, 0, af);
     draw_sprite_ext('spr_pxwhite', 0, shakex + cx - 40, shakey + cy, 720, 90, 0, 0, 1);
-    this.image_blend = merge_color(0x272882, desicolor, Math.max(0, Math.min(1, this.battleprog / 2)));
+    this.image_blend = merge_color(0x27293f, desicolor, Math.max(0, Math.min(1, this.battleprog / 2)));
     draw_sprite_ext('spr_pxwhite', 0, shakex + cx + 188, shakey + cy, 240, 90, 0, merge_color(this.image_blend, 0, 0.8), af);
     for (let i = 1; i < 3; i++) {
       draw_sprite_ext('spr_cc_fountainbg_white', s / 10, shakex + cx + 138 - Math.sin(s / 20) * (i * 12), shakey + cy, 2, 2, 0, this.image_blend, i / 12 * af);
