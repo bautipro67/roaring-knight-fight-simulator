@@ -31,4 +31,5 @@ spr: ^spr_ralsei_walk_(up|down|left|right)
 spr: ^spr_ralsei_(shocked_right|shocked_behind|run_serious_right|halt_serious_right|defeat|kneel_serious)$
 snd: ^snd_(wing|noise|stardrop|knight_stretch|spearappear|drake_dodge|jump_bc|grab|suslaugh|knight_cut2|knight_puff|heavy_passing)$
 snd: ^snd_(impact|closet_impact|bageldefeat|damage|glassbreak|jump|laz_c|heavyswing|metal_hit_strong|sparkle_glock)$
-snd: ^snd_(tenna_beep_loop|tv_static|swing|weaponpull|knight_roar|tv_voice_short|txtund)$
+snd: ^snd_(tenna_beep_loop|tv_static|swing|weaponpull|knight_roar|txtund)$
+snd: ^snd_tv_voice_short(_[0-9])?$

@@ -15,20 +15,20 @@ import {
   draw_sprite_part_ext, draw_sprite_tiled, draw_set_color, draw_set_alpha, draw_rectangle, draw_ellipse, draw_triangle,
   draw_circle_color, draw_line_width_color, draw_set_blend_mode, gpu_set_blendmode, make_color_hsv, surface_create,
   surface_exists, surface_free, surface_set_target, surface_reset_target, draw_clear_alpha, draw_surface_ext,
-  snd_play, snd_stop, snd_loop, snd_pitch, snd_volume, snd_free_all, snd_init, mus_loop_ext, mus_volume, mus_stop,
+  snd_play, snd_stop, snd_loop, snd_pitch, snd_volume, audio_stop_all, snd_init, mus_loop_ext, mus_volume, mus_stop,
   font_add_sprite_ext,
-} from './rt.js?v=20261107152018';
+} from './rt.js?v=20261107201438';
 import {
   first, i_ex, camerax, cameray, scr_movetowards, scr_lerpvar, scr_lerpvar_instance, scr_script_delayed,
   scr_script_repeat, scr_var, scr_doom, scr_dark_marker, scr_marker, scr_shakeobj, scr_afterimage, scr_afterimage_grow,
   scr_darksize, snd_play_x, draw_sprite_fog,
-} from './common.js?v=20261107152018';
+} from './common.js?v=20261107201438';
 import {
   c, c_waitcustom_end, scr_cutscene_make, scr_actor_setup, scr_depth, d_ex, moveToPoint, scr_flip, setFacingSprites,
-} from '../screens/cutscene.js?v=20261107152018';
-import { startBattle } from '../battle/setup.js?v=20261107152018';
-import { gotoRoom, fadeOut } from '../screens/common.js?v=20261107152018';
-import { loadMusic } from '../runtime/assets.js?v=20261107152018';
+} from '../screens/cutscene.js?v=20261107201438';
+import { startBattle } from '../battle/setup.js?v=20261107201438';
+import { gotoRoom, fadeOut } from '../screens/common.js?v=20261107201438';
+import { loadMusic } from '../runtime/assets.js?v=20261107201438';
 
 const BS = String.fromCharCode(92);
 const ROOM_W = 2960; // room_dw_snow_zone
@@ -1136,7 +1136,7 @@ class PTB02 extends Instance {
 
   // con 50: "We... we actually beat it?"
   conWin() {
-    snd_free_all();
+    audio_stop_all(); // snd_stop_all
     c_waitcustom_end();
     const id = this, { whiteall, white_slash, kr_actor: kr, su_actor: su, ra_actor: ra, roaring_knight: rk } = this;
     c.sel(kr); c.facing('r');

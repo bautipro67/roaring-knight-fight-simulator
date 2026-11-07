@@ -2,8 +2,8 @@
 // obj_regularbullet, and the scripts scr_bullet_init / scr_bullet_inherit / scr_childbullet.
 import {
   Instance, defineObject, defineScript, instance_destroy, instance_exists, S,
-} from '../runtime/gm.js?v=20261107152018';
-import { view_x, view_y, cameray, scr_bullet_init, scr_bullet_inherit, scr_childbullet } from './common.js?v=20261107152018';
+} from '../runtime/gm.js?v=20261107201438';
+import { view_x, view_y, cameray, scr_bullet_init, scr_bullet_inherit, scr_childbullet } from './common.js?v=20261107201438';
 
 export class BulletParent extends Instance {}
 defineObject('obj_bulletparent', BulletParent);

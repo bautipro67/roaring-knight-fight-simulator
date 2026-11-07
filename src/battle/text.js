@@ -5,18 +5,20 @@ import {
   instance_number, withObj, random, button1_p, button2_h, string_length, string_char_at,
   string_insert, string_delete, draw_set_font, draw_set_color, draw_get_color, draw_set_alpha, draw_text,
   draw_text_transformed, draw_text_color, draw_rectangle, draw_sprite_ext, draw_self, button3_h, instancesOf,
-} from '../runtime/gm.js?v=20261107152018';
-import { snd_play } from '../runtime/audio.js?v=20261107152018';
+} from '../runtime/gm.js?v=20261107201438';
+import { snd_play, snd_stop, snd_volume, snd_pitch } from '../runtime/audio.js?v=20261107201438';
 
 const sin = Math.sin;
-import { fontName, splitCaller, view_x, view_y } from './common.js?v=20261107152018';
+import { fontName, splitCaller, view_x, view_y } from './common.js?v=20261107201438';
 
 // Text sounds that exist in this build; the others are silent.
 const TEXTSND = {
   snd_text: 'snd_text', snd_txtsus: 'snd_txtsus', snd_txtral: 'snd_txtral', snd_txtjok: 'snd_txtjok',
   snd_txtund: 'snd_txtund', snd_tv_voice_short: 'snd_tv_voice_short',
 };
-import { G } from '../runtime/gm.js?v=20261107152018';
+// Tenna's voice: one of nine takes at a random pitch (scr_textsound, Chapter 3).
+const TV_VOICES = ['snd_tv_voice_short', ...[2, 3, 4, 5, 6, 7, 8, 9].map(n => 'snd_tv_voice_short_' + n)];
+import { G } from '../runtime/gm.js?v=20261107201438';
 const tsnd = n => TEXTSND[n] ?? null;
 
 // scr_textsetup(font, color, x, y, charline, shake, rate, sound, hspace, vspace, special)
@@ -108,7 +110,15 @@ function scr_textsound(w) {
     }
     if (SILENT.has(getchar)) play = 0;
     if (play == 1) {
-      snd_play(w.textsound);
+      if (w.textsound === 'snd_tv_voice_short') {
+        const rand = Math.floor(random(9)) + 1; // irandom(8) + 1
+        if (!(global.flag?.[1054] > 0) && global.flag) global.flag[1054] = 1;
+        const pitch = (0.86 + random(0.35)) * (global.flag?.[1054] || 1);
+        for (const v of TV_VOICES) snd_stop(v);
+        const v = snd_play(TV_VOICES[rand - 1]);
+        if (v) { snd_volume(v, 0.7, 0); snd_pitch(v, pitch); }
+        w.sound_timer = 3;
+      } else snd_play(w.textsound);
       withObj('obj_face_parent', f => { f.mouthmove = 1; });
     }
   }
@@ -214,7 +224,10 @@ export class Writer extends Instance {
 
   alarm0() {
     if (this.rate > 2) this.alarm[1] = 1;
-    else if (this.first_alarm == 1 && this.pos >= 2) scr_textsound(this);
+    else {
+      this.sound_timer = (this.sound_timer ?? 0) - 1;
+      if (this.first_alarm == 1 && this.pos >= 2 && this.sound_timer <= 0) scr_textsound(this);
+    }
     if (this.pos <= this.length) this.alarm[0] = this.rate;
     else this.reachedend = 1;
     if (this.first_alarm == 0) {
@@ -787,7 +800,7 @@ defineScript('scr_blconskip', (inst, n) => {
 
 class Darkener extends Instance {
   create() {
-    this.depth = 200;
+    this.depth = 205; // Chapters 2 and 3 (behind Kris, who stands at 200)
     if (instance_number('obj_darkener') > 1) instance_destroy(this);
     this.darken = 1;
     this.darkamt = 0;

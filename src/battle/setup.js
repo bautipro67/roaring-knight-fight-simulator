@@ -4,11 +4,11 @@
 import {
   global, G, Instance, defineObject, defineScript, S, instance_create, room_reset, objectExists,
   font_add_sprite_ext,
-} from '../runtime/gm.js?v=20261107152018';
-import { snd_free_all, snd_init } from '../runtime/audio.js?v=20261107152018';
-import { WEAPONS, ARMORS, BASE_STATS, getLoadout } from './equipment.js?v=20261107152018';
-import { arr, arr2, view_x, view_y, splitCaller } from './common.js?v=20261107152018';
-import { registerBackground } from './misc.js?v=20261107152018';
+} from '../runtime/gm.js?v=20261107201438';
+import { audio_stop_all, snd_init } from '../runtime/audio.js?v=20261107201438';
+import { WEAPONS, ARMORS, BASE_STATS, getLoadout } from './equipment.js?v=20261107201438';
+import { arr, arr2, view_x, view_y, splitCaller } from './common.js?v=20261107201438';
+import { registerBackground } from './misc.js?v=20261107201438';
 
 function scr_gamestart() {
   global.chapter = 3;
@@ -470,7 +470,7 @@ const INTRO_START = [[150, 130], [112, 168], [92, 214]];
 // Starts a fresh Knight fight: opts.intro = false skips the encounter transition.
 export function startBattle(opts = {}) {
   const tempflag = global.tempflag ? global.tempflag.slice() : null;
-  snd_free_all();
+  audio_stop_all();
   room_reset();
   G.viewScale = 1;
   G.camX = G.camY = 0;
