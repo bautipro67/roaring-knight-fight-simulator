@@ -1,0 +1,34 @@
+# The scenes around the fight (obj_ch3_PTB02 in room_dw_snow_zone): src/knight/scenes.js
+# the room (obj_dw_snow_zone_parallax) and its props
+spr: ^spr_dw_snow_zone_bg_
+spr: spr_dw_snow_zone_end
+spr: spr_dw_snow_zone_tree
+spr: spr_dw_fountain_tall
+spr: spr_cc_fountainbg
+spr: ^spr_undyne_dw_
+spr: spr_face_undyne
+spr: spr_face_placeholder
+# Tenna, Toriel
+spr: spr_tenna_hooray_armsup
+spr: ^spr_tennadeath_
+spr: spr_dw_tv_gachaball_transparent
+spr: spr_toriel_sleep_throne
+# the Knight
+spr: ^spr_roaring_knight_
+spr: spr_shine_white
+spr: spr_ball_small_nooutline
+spr: spr_fx_hitback
+# the party
+spr: ^spr_kris[udlr]_dark$
+spr: ^spr_kris_run_serious_right$
+spr: ^spr_kris_halt_serious_right$
+spr: ^spr_kris_dw_landed$
+spr: ^spr_susie_walk_(up|down|left|right)_dw
+spr: ^spr_susie_(surprised_step_back|point_right_unhappy|surprised_subtle_right|hit_back_serious|run_serious_right|halt_serious_right|idle_serious|crouch|laugh_dw|clash_jump)$
+spr: ^spr_susie_dw_fell
+spr: ^spr_susier_dark$
+spr: ^spr_ralsei_walk_(up|down|left|right)
+spr: ^spr_ralsei_(shocked_right|shocked_behind|run_serious_right|halt_serious_right|defeat|kneel_serious)$
+snd: ^snd_(wing|noise|stardrop|knight_stretch|spearappear|drake_dodge|jump_bc|grab|suslaugh|knight_cut2|knight_puff|heavy_passing)$
+snd: ^snd_(impact|closet_impact|bageldefeat|damage|glassbreak|jump|laz_c|heavyswing|metal_hit_strong|sparkle_glock)$
+snd: ^snd_(tenna_beep_loop|tv_static|swing|weaponpull|knight_roar|tv_voice_short|txtund)$

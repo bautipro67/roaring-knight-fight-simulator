@@ -28,7 +28,8 @@ SOUND_PATTERNS = [
     r"|screenshake|scytheburst|select|spare|spearappear|swing|text|toilet|txtjok|txtral|txtsus|weirdeffect"
     r"|heal_c|spellcast|boost|item|great_shine|cancel|equip|won|levelup|dtrans_lw|wing|noise)$",
 ]
-MUSIC = ["knight.ogg", "knight_appears.ogg", "AUDIO_DEFEAT.ogg", "mus_knightthought.ogg", "AUDIO_DRONE.ogg", "wind_highplace.ogg"]
+MUSIC = ["knight.ogg", "knight_appears.ogg", "AUDIO_DEFEAT.ogg", "mus_knightthought.ogg", "AUDIO_DRONE.ogg", "wind_highplace.ogg",
+         "creepychase.ogg", "berdly_audience.ogg"]  # the last two: the scenes (src/knight/scenes.js)
 TEXT_KEY_PATTERNS = [r"knight", r"^obj_battlecontroller", r"^scr_", r"^obj_spell", r"^obj_heal", r"^obj_pacify",
                      r"^obj_gameover", r"^obj_writer", r"^DEVICE_"]
 

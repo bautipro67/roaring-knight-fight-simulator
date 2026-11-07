@@ -1,10 +1,10 @@
 // Imports every Knight / bullet-phase module so their objects and scripts get registered.
-import './common.js?v=20261107140820';
-import './bullets.js?v=20261107140820';
-import './board.js?v=20261107140820';
-import './soul.js?v=20261107140820';
-import './dbullet.js?v=20261107140820';
-import './enemy.js?v=20261107140820';
+import './common.js?v=20261107152018';
+import './bullets.js?v=20261107152018';
+import './board.js?v=20261107152018';
+import './soul.js?v=20261107152018';
+import './dbullet.js?v=20261107152018';
+import './enemy.js?v=20261107152018';
 
 // Attack modules: a missing or broken one only disables that attack.
 // TODO: rotating (type 104), swords (151, 154), tunnel (153), roaring (107), crescent (109) are not ported yet.
@@ -12,3 +12,5 @@ const ATTACK_MODULES = ['stars', 'flurry', 'swordfall', 'swords', 'tunnel', 'rot
 await Promise.all(ATTACK_MODULES.map(m => import('./attacks/' + m + '.js' + new URL(import.meta.url).search).catch(e => {
   if (!String(e).includes('Failed to fetch')) console.warn('knight attack module failed:', m, e);
 })));
+// The scenes before and after the fight (obj_ch3_PTB02); they use objects from the attack modules.
+await import('./scenes.js?v=20261107152018').catch(e => console.warn('knight scenes failed:', e));

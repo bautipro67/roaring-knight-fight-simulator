@@ -5,17 +5,18 @@ import {
   instance_number, withObj, random, button1_p, button2_h, string_length, string_char_at,
   string_insert, string_delete, draw_set_font, draw_set_color, draw_get_color, draw_set_alpha, draw_text,
   draw_text_transformed, draw_text_color, draw_rectangle, draw_sprite_ext, draw_self, button3_h, instancesOf,
-} from '../runtime/gm.js?v=20261107140820';
-import { snd_play } from '../runtime/audio.js?v=20261107140820';
+} from '../runtime/gm.js?v=20261107152018';
+import { snd_play } from '../runtime/audio.js?v=20261107152018';
 
 const sin = Math.sin;
-import { fontName, splitCaller, view_x, view_y } from './common.js?v=20261107140820';
+import { fontName, splitCaller, view_x, view_y } from './common.js?v=20261107152018';
 
 // Text sounds that exist in this build; the others are silent.
 const TEXTSND = {
   snd_text: 'snd_text', snd_txtsus: 'snd_txtsus', snd_txtral: 'snd_txtral', snd_txtjok: 'snd_txtjok',
+  snd_txtund: 'snd_txtund', snd_tv_voice_short: 'snd_tv_voice_short',
 };
-import { G } from '../runtime/gm.js?v=20261107140820';
+import { G } from '../runtime/gm.js?v=20261107152018';
 const tsnd = n => TEXTSND[n] ?? null;
 
 // scr_textsetup(font, color, x, y, charline, shake, rate, sound, hspace, vspace, special)
@@ -52,7 +53,10 @@ function scr_texttype(w) {
     case 13: set(F('main'), W, y, 33, 0, 1, 'snd_txtber', 8, 18, 0); break;
     case 14: set(F('main'), W, y, 33, 0, 1, 'snd_txtsans', 8, 18, 0); break;
     case 15: case 19: set(F('main'), W, y, 33, 0, 1, 'snd_text', 8, 18, 0); break;
-    case 17: set(F('main'), W, y, 33, 0, 1, 'snd_txtund', 8, 18, 0); break;
+    case 17:
+      if (global.darkzone == 1) set(F('mainbig'), W, y, 33, 0, 1, 'snd_txtund', 16, 36, 1);
+      else set(F('main'), W, y, 33, 0, 1, 'snd_txtund', 8, 18, 0);
+      break;
     case 18: set(F('main'), W, y, 33, 0, 1, 'snd_txtasg', 8, 18, 0); break;
     case 20: case 21: set(F('main'), W, y, 33, 0, 1, 'snd_txtal', 8, 18, 0); break;
     case 22: set(F('tinynoelle'), W, y + 7, 33, 0, 1, 'snd_txtal', 6, 18, 0); break;
@@ -73,8 +77,8 @@ function scr_texttype(w) {
     case 48: set(F('mainbig'), W, y, 33, 0, 1, 'snd_dadtxt', 16, 28, 1); break;
     case 50: set(F('dotumche'), 0, y, 33, 0, 1, 'snd_text', 9, 20, 0); break;
     case 75: set(F('dotumche'), 0, y, 33, 0, 1, 'snd_txtsus', 9, 20, 0); break;
-    case 80: set(F('mainbig'), W, y, 33, 0, 1, null, 16, 36, 1); break;
-    case 81: set(F('dotumche'), 0, y, 33, 0, 1, null, 9, 20, 0); break;
+    case 80: set(F('mainbig'), W, y, 33, 0, 1, 'snd_tv_voice_short', 16, 36, 1); break;
+    case 81: set(F('dotumche'), 0, y, 33, 0, 1, 'snd_tv_voice_short', 9, 20, 0); break;
     case 61: set(F('main'), W, y, 33, 0, 2, null, 8, 18, 0); break;
     case 51: set(F('mainbig'), W, y, 33, 0, 10, 'snd_text', 16, 36, 1); break;
     case 52: set(F('mainbig'), W, y, 33, 0, 4, 'snd_text', 16, 36, 1); break;
@@ -504,7 +508,7 @@ export class Writer extends Instance {
 }
 defineObject('obj_writer', Writer);
 
-// obj_face: draws the speaker's face in the battle box (Susie fc 1, Ralsei fc 2; Chapter 2+ sprites).
+// obj_face: draws the speaker's face in the battle box (Susie fc 1, Ralsei fc 2, Undyne fc 9; Chapter 2+ sprites).
 class FaceParent extends Instance {
   create() { this.depth = 10; this.mouthmove = 0; }
   draw() {}
@@ -535,6 +539,10 @@ class Face extends FaceParent {
       if (global.fc == 2) {
         if (global.fe == 61) draw_sprite_ext('spr_face_placeholder', 0, this.x - 15, this.y - 10, f, f, 0, 0xffffff, 1);
         else draw_sprite_ext('spr_face_r_nohat', global.fe, this.x - 15, this.y - 10, f, f, 0, 0xffffff, 1);
+      }
+      if (global.fc == 9) {
+        if (global.fe == 61) draw_sprite_ext('spr_face_placeholder', 0, this.x - 10, this.y, f, f, 0, 0xffffff, 1);
+        else draw_sprite_ext('spr_face_undyne', global.fe, this.x - 10, this.y, f, f, 0, 0xffffff, 1);
       }
     }
     this.nowface = global.fc;
@@ -696,6 +704,10 @@ defineScript('scr_speaker', (name) => {
     global.typer = global.fighting == 1 ? 45 : 31;
   }
   if (name == 'tenna') global.typer = global.fighting == 1 ? 81 : 80;
+  if (name == 'undyne' || name == 'und') {
+    global.typer = 17;
+    global.fc = 9;
+  }
 });
 
 // scr_anyface(speaker, msgno, emotion): a one-line message that switches the face.

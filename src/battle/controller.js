@@ -7,9 +7,9 @@ import {
   left_p, right_p, up_p, down_p, button1_p, button2_p, string_width, string_hash_to_newline,
   draw_set_color, draw_set_alpha, draw_set_font, draw_set_halign, draw_rectangle, draw_sprite,
   draw_sprite_ext, draw_text, draw_text_colour, draw_text_transformed, draw_line_width,
-} from '../runtime/gm.js?v=20261107140820';
-import { snd_play, snd_volume, snd_pitch, mus_loop_ext } from '../runtime/audio.js?v=20261107140820';
-import { arr, arr2, view_x, view_y, withInst, exists, gmlString, subst, knightEnemy } from './common.js?v=20261107140820';
+} from '../runtime/gm.js?v=20261107152018';
+import { snd_play, snd_volume, snd_pitch, mus_loop_ext } from '../runtime/audio.js?v=20261107152018';
+import { arr, arr2, view_x, view_y, withInst, exists, gmlString, subst, knightEnemy } from './common.js?v=20261107152018';
 
 const sin = Math.sin, cos = Math.cos;
 const g = global;
@@ -195,10 +195,17 @@ class BattleController extends Instance {
   step() {
     const knight = knightEnemy();
     if (knight && knight.end_cutscene_version > 0) {
-      // obj_ch3_PTB02 waits for intro == 2, then plays the "we beat it?" cutscene: the ending screen here.
+      // obj_ch3_PTB02 waits for intro == 2, then 30 frames later (con 8) the party is back in the
+      // room for the "we beat it?" scene (src/knight/scenes.js); without scenes, the ending screen.
       if (this.intro == 2) {
         this.endwait = (this.endwait || 0) + 1;
-        if (this.endwait == 45) S.startEnding('win');
+        const scenes = G.settings?.scenes !== false && !instance_exists('obj_practicecontroller') && !instance_exists('obj_sandboxcontroller');
+        if (scenes && this.endwait == 30) {
+          const at = o => (o ? [o.x, o.y] : null);
+          const h = ['obj_herokris', 'obj_herosusie', 'obj_heroralsei'].map(n => at(instancesOf(n)[0]));
+          S.startKnightAfterScene('win', { heroes: h.every(Boolean) ? h : null, knight: [knight.x, knight.y] });
+        }
+        if (!scenes && this.endwait == 45) S.startEnding('win');
       }
       return;
     }

@@ -4,11 +4,11 @@
 import {
   global, G, Instance, defineObject, defineScript, S, instance_create, room_reset, objectExists,
   font_add_sprite_ext,
-} from '../runtime/gm.js?v=20261107140820';
-import { snd_free_all, snd_init } from '../runtime/audio.js?v=20261107140820';
-import { WEAPONS, ARMORS, BASE_STATS, getLoadout } from './equipment.js?v=20261107140820';
-import { arr, arr2, view_x, view_y, splitCaller } from './common.js?v=20261107140820';
-import { registerBackground } from './misc.js?v=20261107140820';
+} from '../runtime/gm.js?v=20261107152018';
+import { snd_free_all, snd_init } from '../runtime/audio.js?v=20261107152018';
+import { WEAPONS, ARMORS, BASE_STATS, getLoadout } from './equipment.js?v=20261107152018';
+import { arr, arr2, view_x, view_y, splitCaller } from './common.js?v=20261107152018';
+import { registerBackground } from './misc.js?v=20261107152018';
 
 function scr_gamestart() {
   global.chapter = 3;
@@ -484,13 +484,29 @@ export function startBattle(opts = {}) {
   }
   instance_create(0, 0, 'obj_time');
   if (G.settings?.simplify) global.flag[8] = 1;
-  global.introx = INTRO_START.map(p => p[0]);
-  global.introy = INTRO_START.map(p => p[1]);
+  // From the scene before the fight (src/knight/scenes.js): the party jumps from where they stood.
+  const start = opts.introStart ?? INTRO_START;
+  global.introx = start.map(p => p[0]);
+  global.introy = start.map(p => p[1]);
+  // obj_battleback is removed for this fight, so the snow zone stays behind the battle.
+  if (opts.sceneRoom && objectExists('obj_sim_ptb02_battleroom')) Object.assign(instance_create(0, 0, 'obj_sim_ptb02_battleroom'), opts.sceneRoom);
   if (opts.intro === false) {
     S.scr_encountersetup(global.encounterno);
     instance_create(0, 0, 'obj_battlecontroller');
   } else {
     instance_create(0, 0, 'obj_encounterbasic');
+    // scr_battle(115, 1, knight_marker): the Knight's sword marker moves to the Knight's place in
+    // 20 frames and is gone after 25, when the battle's Knight takes over.
+    const km = opts.knightMarker;
+    if (km && objectExists('obj_sim_ptb02_knightmarker')) {
+      const m = instance_create(km.x, km.y, 'obj_sim_ptb02_knightmarker');
+      m.index = km.index;
+      m.timer = km.timer;
+      m.image_index = 7 + km.index;
+      m.depth = 0;
+      S.scr_move_to_point_over_time?.(m, global.monstermakex[0], km.ystart, 20);
+      S.scr_doom?.(m, 25);
+    }
   }
   G.battleStarted = G.frame;
 }

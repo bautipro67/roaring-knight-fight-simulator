@@ -1,14 +1,14 @@
-// After the fight (obj_ch3_PTB02): on a win, Susie's "We... we actually beat it?" lines in the
-// dark-world text box over the wind (wind_highplace.ogg at half pitch); after GO FORWARD on the
-// game over screen, the Knight stands over the fallen party. Then TRY AGAIN / TITLE.
-// TODO: the full cutscene (the Knight slashing Susie and Ralsei, Toriel) is not reproduced.
+// The end screen. With SCENES on it comes after the scene that follows the fight (src/knight/scenes.js)
+// and only shows the result and TRY AGAIN / TITLE. With SCENES off it stands in for that scene: on a
+// win, Susie's "We... we actually beat it?" lines over the wind (wind_highplace.ogg at half pitch);
+// after GO FORWARD, the Knight over the fallen party.
 import {
   G, global, Instance, defineObject, defineScript, S, instance_create, instance_exists, draw_sprite_ext,
   draw_set_color, draw_set_font, draw_set_alpha, draw_rectangle,
-} from '../runtime/gm.js?v=20261107140820';
-import { snd_init, mus_loop_ext, mus_volume, mus_stop } from '../runtime/audio.js?v=20261107140820';
-import { startBattle } from '../battle/setup.js?v=20261107140820';
-import { gotoRoom, scr_darkbox, fadeOut, centerText } from './common.js?v=20261107140820';
+} from '../runtime/gm.js?v=20261107152018';
+import { snd_init, mus_loop_ext, mus_volume, mus_stop } from '../runtime/audio.js?v=20261107152018';
+import { startBattle } from '../battle/setup.js?v=20261107152018';
+import { gotoRoom, scr_darkbox, fadeOut, centerText } from './common.js?v=20261107152018';
 
 const BS = String.fromCharCode(92);
 const LINES = {
@@ -42,6 +42,7 @@ class Ending extends Instance {
     this.writer = null;
     this.cur_jewel = 0;
     this.titlealpha = 0;
+    this.afterScene = false;
     this.music = snd_init('wind_highplace.ogg');
     mus_loop_ext(this.music, 0, 0.5);
     mus_volume(this.music, 1, 60);
@@ -61,7 +62,8 @@ class Ending extends Instance {
     this.t += 1;
     if (this.con == 0 && this.t >= 45) {
       this.con = 1;
-      this.say(d.msg);
+      if (this.afterScene) this.writer = null; // the scene already told it
+      else this.say(d.msg);
     }
     if (this.con == 1 && !instance_exists(this.writer)) {
       this.con = 3;
@@ -72,8 +74,10 @@ class Ending extends Instance {
         mus_volume(this.music, 0, 20);
         fadeOut(20, () => {
           mus_stop(this.music);
-          if (i == 0) startBattle({ intro: G.settings?.intro !== false });
-          else S.startTitle();
+          if (i == 0) {
+            if (G.settings?.scenes !== false) S.startKnightFight();
+            else startBattle({ intro: G.settings?.intro !== false });
+          } else S.startTitle();
         });
       }, 'fnt_mainbig', 32);
     }
@@ -82,7 +86,7 @@ class Ending extends Instance {
     const d = LINES[this.kind];
     const a = this.con >= 3 ? 1 : Math.min(1, this.t / 30);
     const bob = Math.cos(this.t / 8) * 8;
-    draw_sprite_ext(d.knight, 0, 230, 70 + bob, 2, 2, 0, 0xffffff, a);
+    if (!this.afterScene) draw_sprite_ext(d.knight, 0, 230, 70 + bob, 2, 2, 0, 0xffffff, a);
     if (this.con >= 1 && this.con <= 2) {
       draw_set_color(0);
       draw_rectangle(38, 326, 602, 464, false);
@@ -100,9 +104,10 @@ class Ending extends Instance {
 }
 defineObject('obj_sim_ending', Ending);
 
-defineScript('startEnding', (kind) => {
+defineScript('startEnding', (kind, opts = {}) => {
   gotoRoom();
   global.fighting = 0;
   const e = instance_create(0, 0, 'obj_sim_ending');
   e.kind = kind === 'lose' ? 'lose' : 'win';
+  e.afterScene = !!opts.afterScene;
 });

@@ -1,5 +1,5 @@
 // WebAudio playback with the Deltarune snd_* / mus_* wrapper semantics.
-import { assets, audioReady, loadMusic } from './assets.js?v=20261107140820';
+import { assets, audioReady, loadMusic } from './assets.js?v=20261107152018';
 
 let ctx = null;
 let master = null;
@@ -67,7 +67,7 @@ class Voice {
       this.src = ctx.createBufferSource();
       this.src.buffer = buf;
       this.src.loop = loop;
-      this.src.playbackRate.value = this.pitch;
+      this.src.playbackRate.value = this.paused ? 0 : this.pitch;
       this.src.connect(this.gain);
       this.src.onended = () => this.cleanup();
       this.src.start();
@@ -93,7 +93,16 @@ class Voice {
   }
   setPitch(p) {
     this.pitch = p;
-    if (this.src) this.src.playbackRate.value = p;
+    if (this.src && !this.paused) this.src.playbackRate.value = p;
+  }
+  // snd_pause / snd_resume: a stopped playback rate holds the position.
+  pause() {
+    this.paused = true;
+    if (this.src) this.src.playbackRate.value = 0;
+  }
+  resume() {
+    this.paused = false;
+    if (this.src) this.src.playbackRate.value = this.pitch;
   }
 }
 
@@ -181,4 +190,12 @@ export function mus_stop(stream) {
     stream.voice.stop();
     stream.voice = null;
   }
+}
+
+export function mus_pause(stream) {
+  voiceOf(stream)?.pause();
+}
+
+export function mus_resume(stream) {
+  voiceOf(stream)?.resume();
 }
