@@ -5,11 +5,11 @@ import {
   instance_number, withObj, random, button1_p, button2_h, string_length, string_char_at,
   string_insert, string_delete, draw_set_font, draw_set_color, draw_get_color, draw_set_alpha, draw_text,
   draw_text_transformed, draw_text_color, draw_rectangle, draw_sprite_ext, draw_self, button3_h, instancesOf,
-} from '../runtime/gm.js?v=20261107201438';
-import { snd_play, snd_stop, snd_volume, snd_pitch } from '../runtime/audio.js?v=20261107201438';
+} from '../runtime/gm.js?v=20261107203111';
+import { snd_play, snd_stop, snd_volume, snd_pitch } from '../runtime/audio.js?v=20261107203111';
 
 const sin = Math.sin;
-import { fontName, splitCaller, view_x, view_y } from './common.js?v=20261107201438';
+import { fontName, splitCaller, view_x, view_y } from './common.js?v=20261107203111';
 
 // Text sounds that exist in this build; the others are silent.
 const TEXTSND = {
@@ -18,7 +18,7 @@ const TEXTSND = {
 };
 // Tenna's voice: one of nine takes at a random pitch (scr_textsound, Chapter 3).
 const TV_VOICES = ['snd_tv_voice_short', ...[2, 3, 4, 5, 6, 7, 8, 9].map(n => 'snd_tv_voice_short_' + n)];
-import { G } from '../runtime/gm.js?v=20261107201438';
+import { G } from '../runtime/gm.js?v=20261107203111';
 const tsnd = n => TEXTSND[n] ?? null;
 
 // scr_textsetup(font, color, x, y, charline, shake, rate, sound, hspace, vspace, special)
@@ -752,8 +752,9 @@ defineScript('scr_terminate_writer', () => {
 });
 
 // scr_guardpeek(hero object): a DEFENDing hero peeks out of the guard while an enemy talks.
+// Ralsei goes back behind the guard afterwards (spr_ralsei_redefend).
 defineScript('scr_guardpeek', (obj) => {
-  const name = obj == 1412 ? 'obj_herosusie' : obj == 1413 ? 'obj_heroralsei' : obj;
+  const name = obj == 1412 || obj == 376 ? 'obj_herosusie' : obj == 1413 || obj == 377 ? 'obj_heroralsei' : obj;
   const h = instancesOf(name)[0];
   if (!h || global.faceaction[h.myself] != 4) return 0;
   h.image_alpha = 0;
@@ -761,23 +762,44 @@ defineScript('scr_guardpeek', (obj) => {
   const p = S.scr_battle_marker(h.x + (susie ? 8 : 0), h.y + (susie ? 4 : 0), susie ? 'spr_susie_defend_peek' : 'spr_ralsei_defend_peek');
   p.depth = h.depth;
   p.sourceobject = h;
+  if (!susie) p.endanimation = 'spr_ralsei_redefend';
   return p;
 });
 
-// obj_battle_marker: hands the hero back its visibility once the bullet phase starts.
+// obj_battle_marker (scr_battle_marker): a sprite standing in for a hero while the enemies talk.
+// When the talk is over it plays its end animation, if it has one, then gives the hero back.
 class BattleMarker extends Instance {
-  create() { this.sourceobject = null; this.image_xscale = 2; this.image_yscale = 2; this.image_speed = 0; }
+  create() {
+    this.endanimation = 0;
+    this.sourceobject = null;
+    this.destroyoncomplete = 0;
+    this.autocancel = 1;
+    this.loop = false;
+  }
   step() {
-    if (global.mnfight == 2 || global.myfight == 0) {
-      if (this.sourceobject && this.sourceobject.alive) this.sourceobject.image_alpha = 1;
-      instance_destroy(this);
-    }
+    if (!this.destroyoncomplete && !S.scr_isphase('enemytalk')) instance_destroy(this);
+  }
+  animationEnd() {
+    if (this.destroyoncomplete) instance_destroy(this);
+    else if (!this.loop) this.image_speed = 0;
+  }
+  onDestroy() {
+    if (!this.destroyoncomplete && this.endanimation) {
+      const m = S.scr_battle_marker(this.x, this.y, this.endanimation);
+      m.destroyoncomplete = 1;
+      m.sourceobject = this.sourceobject;
+      m.depth = this.depth;
+      m.image_speed = 0.5;
+    } else if (this.sourceobject && this.sourceobject.alive) this.sourceobject.image_alpha = 1;
   }
 }
 defineObject('obj_battle_marker', BattleMarker);
 defineScript('scr_battle_marker', (x, y, spr) => {
   const m = instance_create(x, y, 'obj_battle_marker');
   m.sprite_index = spr;
+  m.image_speed = 1;
+  m.image_xscale = 2;
+  m.image_yscale = 2;
   return m;
 });
 

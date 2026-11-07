@@ -4,11 +4,11 @@
 import {
   global, G, Instance, defineObject, defineScript, S, instance_create, room_reset, objectExists,
   font_add_sprite_ext,
-} from '../runtime/gm.js?v=20261107201438';
-import { audio_stop_all, snd_init } from '../runtime/audio.js?v=20261107201438';
-import { WEAPONS, ARMORS, BASE_STATS, getLoadout } from './equipment.js?v=20261107201438';
-import { arr, arr2, view_x, view_y, splitCaller } from './common.js?v=20261107201438';
-import { registerBackground } from './misc.js?v=20261107201438';
+} from '../runtime/gm.js?v=20261107203111';
+import { audio_stop_all, snd_init } from '../runtime/audio.js?v=20261107203111';
+import { WEAPONS, ARMORS, BASE_STATS, getLoadout } from './equipment.js?v=20261107203111';
+import { arr, arr2, view_x, view_y, splitCaller } from './common.js?v=20261107203111';
+import { registerBackground } from './misc.js?v=20261107203111';
 
 function scr_gamestart() {
   global.chapter = 3;
@@ -464,8 +464,10 @@ class ObjTime extends Instance {
 }
 defineObject('obj_time', ObjTime);
 
-// Overworld spots the party stands on when the battle starts (they jump into battle positions).
-const INTRO_START = [[150, 130], [112, 168], [92, 214]];
+// Where the party stands when obj_ch3_PTB02 starts the battle (camera at x 2230): they jump from there.
+const INTRO_START = [[126, 104], [80, 142], [58, 190]];
+// ... and the Knight's sword marker (scr_battle's knight_marker), frame 11 of the sword draw.
+const KNIGHT_MARKER = { x: 440, y: 100, ystart: 100, index: 4, timer: 6 };
 
 // Starts a fresh Knight fight: opts.intro = false skips the encounter transition.
 export function startBattle(opts = {}) {
@@ -489,7 +491,9 @@ export function startBattle(opts = {}) {
   global.introx = start.map(p => p[0]);
   global.introy = start.map(p => p[1]);
   // obj_battleback is removed for this fight, so the snow zone stays behind the battle.
-  if (opts.sceneRoom && objectExists('obj_sim_ptb02_battleroom')) Object.assign(instance_create(0, 0, 'obj_sim_ptb02_battleroom'), opts.sceneRoom);
+  // (Without the scene before it, the room is as obj_ch3_PTB02 leaves it for the first fight.)
+  const room = opts.sceneRoom ?? { vx: 2230, vy: 0, overlay_pulse: true, overlay_alpha: 0.4 };
+  if (objectExists('obj_sim_ptb02_battleroom')) Object.assign(instance_create(0, 0, 'obj_sim_ptb02_battleroom'), room);
   if (opts.intro === false) {
     S.scr_encountersetup(global.encounterno);
     instance_create(0, 0, 'obj_battlecontroller');
@@ -497,7 +501,7 @@ export function startBattle(opts = {}) {
     instance_create(0, 0, 'obj_encounterbasic');
     // scr_battle(115, 1, knight_marker): the Knight's sword marker moves to the Knight's place in
     // 20 frames and is gone after 25, when the battle's Knight takes over.
-    const km = opts.knightMarker;
+    const km = opts.knightMarker ?? KNIGHT_MARKER;
     if (km && objectExists('obj_sim_ptb02_knightmarker')) {
       const m = instance_create(km.x, km.y, 'obj_sim_ptb02_knightmarker');
       m.index = km.index;
