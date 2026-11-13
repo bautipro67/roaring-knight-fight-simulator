@@ -13,8 +13,8 @@ import {
   collision_rectangle, d3d_set_fog, draw_set_blend_mode, gpu_get_blendmode, sprite_get_width, sprite_get_height,
   sprite_get_xoffset, sprite_get_yoffset, draw_triangle_color, draw_circle, draw_get_alpha, merge_color, random, S,
   defineScript,
-} from '../runtime/gm.js?v=20261107203111';
-import { snd_play, snd_volume, snd_pitch } from '../runtime/audio.js?v=20261107203111';
+} from '../runtime/gm.js?v=20261113110929';
+import { snd_play, snd_volume, snd_pitch } from '../runtime/audio.js?v=20261113110929';
 
 export const VIEW_W = 640;
 export const VIEW_H = 480;
@@ -510,8 +510,16 @@ export function scr_lerpvar_instance(target, varname, a, b, time, easetype, ease
   if (easeinout !== undefined) l.easeinout = easeinout;
   return l;
 }
-export const scr_lerpvar = (self, ...args) => scr_lerpvar_instance(self, ...args);
-export const scr_lerp_var_instance = scr_lerpvar_instance;
+// GML scr_lerpvar with fewer than 6 arguments passes only (var, from, to, time): a lone easetype
+// such as scr_lerpvar("image_alpha", 0.8, 0, 30, "in") is dropped and the lerp is linear.
+export const scr_lerpvar = (self, v, a, b, t, ...ease) => (ease.length >= 2
+  ? scr_lerpvar_instance(self, v, a, b, t, ease[0], ease[1])
+  : scr_lerpvar_instance(self, v, a, b, t));
+// GML scr_lerp_var_instance checks `argument_count >= 6` before `>= 7`, so it never passes the
+// "in"/"out" argument: with an easetype the ease is always the default "out".
+export const scr_lerp_var_instance = (target, v, a, b, t, ...ease) => (ease.length >= 1
+  ? scr_lerpvar_instance(target, v, a, b, t, ease[0])
+  : scr_lerpvar_instance(target, v, a, b, t));
 
 // scr_script_delayed(fn, delay, ...args): fn(target, ...args) after `delay` frames.
 export function scr_script_delayed(self, fn, delay, ...args) {
@@ -856,7 +864,7 @@ export function scr_lerp_imageblend(self, target, c1, c2, time, style, ease) {
   l.target = target;
   l.color1 = c1;
   l.color2 = c2;
-  l.mylerp = style !== undefined ? scr_lerpvar_instance(l, 'blendindex', 0, 1, time, style, ease) : scr_lerpvar_instance(l, 'blendindex', 0, 1, time);
+  l.mylerp = style !== undefined ? scr_lerp_var_instance(l, 'blendindex', 0, 1, time, style, ease) : scr_lerp_var_instance(l, 'blendindex', 0, 1, time);
   l.alarm[0] = time;
   return l;
 }

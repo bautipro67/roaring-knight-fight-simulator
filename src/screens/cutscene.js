@@ -8,13 +8,13 @@ import {
   draw_sprite_ext, draw_set_color, draw_rectangle, lerp, point_distance, point_direction, lengthdir_x, lengthdir_y,
   clamp, left_h, right_h, up_h, down_h, button2_h, sprite_get_width, sprite_get_height, sprite_get_xoffset,
   sprite_get_yoffset,
-} from '../runtime/gm.js?v=20261107203111';
+} from '../runtime/gm.js?v=20261113110929';
 import {
   snd_play, snd_pitch, snd_volume, snd_init, snd_loop, snd_stop, snd_free_all, mus_loop_ext, mus_volume, mus_stop,
   mus_pause, mus_resume,
-} from '../runtime/audio.js?v=20261107203111';
-import { scr_darkbox } from './common.js?v=20261107203111';
-import { scr_lerpvar_instance, scr_shakeobj, scr_script_repeat } from '../knight/common.js?v=20261107203111';
+} from '../runtime/audio.js?v=20261113110929';
+import { scr_darkbox } from './common.js?v=20261113110929';
+import { scr_lerpvar_instance, scr_shakeobj, scr_script_repeat } from '../knight/common.js?v=20261113110929';
 
 // ---------------------------------------------------------------- helpers
 
@@ -418,6 +418,8 @@ class CutsceneMaster extends Instance {
         if (c.name === 'varto') from = target[a2];
         if (a5 === 0) target[a2] = from;
         else if (a6 === 0) scr_lerpvar_instance(target, a2, from, a4, a5);
+        // a numeric easetype eases "in"; a string like "2out" / "-1in" carries its own direction
+        else if (typeof a6 !== 'string') scr_lerpvar_instance(target, a2, from, a4, a5, a6, 'in');
         else {
           const m = /^(-?)(\d+)(.*)$/.exec(String(a6));
           scr_lerpvar_instance(target, a2, from, a4, a5, m ? Number(m[1] + m[2]) : 0, m ? m[3] : 'out');
@@ -571,9 +573,9 @@ export const c = {
   waitcustom: () => cmd('waitcustom'),
   delaycmd: (t, name, a, b = 0, d = 0) => cmd('delaycmd', t, name, a, b, d, 0),
   var_instance: (inst, v, val) => cmd('var', inst, v, val, 0, 0, 0),
-  var_lerp_instance: (inst, v, a, b, t, ease, inout) => cmd('var', inst, v, a, b, t, ease === undefined ? 0 : String(ease) + (inout ?? '')),
-  var_lerp_to_instance: (inst, v, b, t, ease, inout) => cmd('varto', inst, v, 0, b, t, ease === undefined ? 0 : String(ease) + (inout ?? '')),
-  var_lerp_to: (v, b, t, ease, inout) => cmd('varto', 0, v, 0, b, t, ease === undefined ? 0 : String(ease) + (inout ?? '')),
+  var_lerp_instance: (inst, v, a, b, t, ease, inout) => cmd('var', inst, v, a, b, t, ease === undefined ? 0 : inout === undefined ? ease : String(ease) + inout),
+  var_lerp_to_instance: (inst, v, b, t, ease, inout) => cmd('varto', inst, v, 0, b, t, ease === undefined ? 0 : inout === undefined ? ease : String(ease) + inout),
+  var_lerp_to: (v, b, t, ease, inout) => cmd('varto', 0, v, 0, b, t, ease === undefined ? 0 : inout === undefined ? ease : String(ease) + inout),
   soundplay: s => cmd('soundplay', s, 0, 0),
   soundplay_x: (s, vol, pitch) => cmd('soundplay', s, vol, pitch),
   mus: k => cmd('mus', k),

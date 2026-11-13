@@ -17,18 +17,18 @@ import {
   surface_exists, surface_free, surface_set_target, surface_reset_target, draw_clear_alpha, draw_surface_ext,
   snd_play, snd_stop, snd_loop, snd_pitch, snd_volume, audio_stop_all, snd_init, mus_loop_ext, mus_volume, mus_stop,
   font_add_sprite_ext,
-} from './rt.js?v=20261107203111';
+} from './rt.js?v=20261113110929';
 import {
-  first, i_ex, camerax, cameray, scr_movetowards, scr_lerpvar, scr_lerpvar_instance, scr_script_delayed,
+  first, i_ex, camerax, cameray, scr_movetowards, scr_lerpvar, scr_lerpvar_instance, scr_lerp_var_instance, scr_script_delayed,
   scr_script_repeat, scr_var, scr_doom, scr_dark_marker, scr_marker, scr_shakeobj, scr_afterimage, scr_afterimage_grow,
   scr_darksize, snd_play_x, draw_sprite_fog,
-} from './common.js?v=20261107203111';
+} from './common.js?v=20261113110929';
 import {
   c, c_waitcustom_end, scr_cutscene_make, scr_actor_setup, scr_depth, d_ex, moveToPoint, scr_flip, setFacingSprites,
-} from '../screens/cutscene.js?v=20261107203111';
-import { startBattle } from '../battle/setup.js?v=20261107203111';
-import { gotoRoom, fadeOut } from '../screens/common.js?v=20261107203111';
-import { loadMusic } from '../runtime/assets.js?v=20261107203111';
+} from '../screens/cutscene.js?v=20261113110929';
+import { startBattle } from '../battle/setup.js?v=20261113110929';
+import { gotoRoom, fadeOut } from '../screens/common.js?v=20261113110929';
+import { loadMusic } from '../runtime/assets.js?v=20261113110929';
 
 const BS = String.fromCharCode(92);
 const ROOM_W = 2960; // room_dw_snow_zone
@@ -195,11 +195,12 @@ class TorielGacha extends Instance {
   step() {
     if (this.ball_open) {
       this.ball_open = false;
-      const l = (v, d) => scr_lerpvar_instance(this, v, this[v], this[v] + d, 12, 2, 'in');
+      // (scr_lerp_var_instance drops the "in": the game eases these out)
+      const l = (v, d) => scr_lerp_var_instance(this, v, this[v], this[v] + d, 12, 2, 'in');
       l('ballbot_pos_x', 80); l('ballbot_pos_y', 80); l('ballcover_pos_x', 80); l('ballcover_pos_y', 80);
       l('balltop_pos_x', -80); l('balltop_pos_y', -80);
-      scr_lerpvar_instance(this, 'ball_top_alpha', this.ball_top_alpha, 0, 12, 2, 'in');
-      scr_lerpvar_instance(this, 'ball_alpha', 1, 0, 12, 2, 'in');
+      scr_lerp_var_instance(this, 'ball_top_alpha', this.ball_top_alpha, 0, 12, 2, 'in');
+      scr_lerp_var_instance(this, 'ball_alpha', 1, 0, 12, 2, 'in');
     }
   }
   draw() {
