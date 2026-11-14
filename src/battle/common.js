@@ -1,5 +1,5 @@
 // Small helpers shared by the battle modules.
-import { G, Instance, instance_exists } from '../runtime/gm.js?v=20261114002512';
+import { G, Instance, instance_exists } from '../runtime/gm.js?v=20261114041601';
 
 export const arr = (n, v = 0) => new Array(n).fill(v);
 export const arr2 = (n, m, v = 0) => Array.from({ length: n }, () => new Array(m).fill(v));
@@ -40,7 +40,7 @@ export const subst = (str, ...subs) => {
 export const knightEnemy = () => G.instances.find(i => i.alive && i.constructor.objName === 'obj_knight_enemy' || (i.alive && i.isKnightEnemy)) || null;
 
 // draw_sprite_tiled_ext
-import { getSprite, draw_sprite_ext } from '../runtime/gm.js?v=20261114002512';
+import { getSprite, draw_sprite_ext } from '../runtime/gm.js?v=20261114041601';
 export function draw_sprite_tiled_ext(name, sub, x, y, xs, ys, col, alpha) {
   const spr = getSprite(name);
   if (!spr) return;
