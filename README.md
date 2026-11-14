@@ -8,16 +8,17 @@ Play the Roaring Knight boss fight from **DELTARUNE Chapter 3** for free in your
 
 - Fight alongside Susie and Ralsei: FIGHT, ACT, S-Action, R-Action, MAGIC, ITEM and DEFEND.
 - Every attack of the Knight, with the SOUL, grazing and TP.
+- **The scenes around the fight**: the Knight cuts Tenna down, takes Toriel and roars before the battle; after a win, "We... we actually beat it?", then the Knight strikes the party down, dodges Undyne's spears and flies off with Toriel and Undyne. After a game over you can GO BACK to the fight or GO FORWARD to the end. Turn them off with SCENES in OPTIONS.
 - The battle logic is ported from the original game, so it plays like the real fight.
 - **Practice mode** (Bad Time Simulator style): dodge the attacks in order; lose your HP bar and the attack restarts, survive it and you move on. Pick the starting attack and 90 / 45 / 1 HP. Scores with ranks and a saved best for full runs. Direct link: [`?practice`](https://bautipro67.github.io/roaring-knight-fight-simulator/?practice).
 - **EQUIPMENT**: pick each character's weapon and armors (any Chapter 3 gear they can use, including the ShadowMantle) and the items you bring into the fight.
 - **Codes**: type a secret code in the Codes box under the game to unlock extras.
-- **OPTIONS**: volume, easy mode (half damage), **SOUL hats** and **CONTROLS** to remap every button on keyboard and gamepad. Options are remembered in the browser.
+- **OPTIONS**: volume, easy mode (half damage), scenes on/off, **SOUL hats** and **CONTROLS** to remap every button on keyboard and gamepad. Options are remembered in the browser.
 - **Pause** with Esc / P (Start on a gamepad): continue, restart, volume, quit to title.
 - **Sandbox mode** to repeat any attack freely: [`?sandbox&attack=0`](https://bautipro67.github.io/roaring-knight-fight-simulator/?sandbox&attack=0) (`[` / `]` switch attacks, `I` invincibility).
 - Touch controls on phones and tablets, fullscreen button.
 
-Also by the same fan: [Jevil Fight Simulator](https://bautipro67.github.io/jevil-fight-simulator/). See [all the DELTARUNE fight simulators](https://bautipro67.github.io/).
+Also by the same fan: [Jevil](https://bautipro67.github.io/jevil-fight-simulator/), [Spamton NEO](https://bautipro67.github.io/spamton-neo-fight-simulator/) and [Gerson](https://bautipro67.github.io/gerson-fight-simulator/) fight simulators. See [all the DELTARUNE fight simulators](https://bautipro67.github.io/).
 
 ## Controls
 
