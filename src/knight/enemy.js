@@ -6,12 +6,12 @@ import {
   G, global, Instance, defineObject, instance_create, instance_create_depth, instance_destroy, instance_exists, instancesOf,
   choose, random, merge_color, make_color_hsv, draw_sprite_ext, d3d_set_fog, keyboard_check_pressed, button3_p,
   snd_play, snd_stop, mus_volume, draw_sprite_tiled_ext, bgr, S,
-} from './rt.js?v=20261113110929';
+} from './rt.js?v=20261114002512';
 import {
   first, camerax, cameray, i_ex, callOr, scr_lerpvar, scr_doom, snd_play_x, move_towards_point, tagParent,
-} from './common.js?v=20261113110929';
-import { scr_bulletspawner } from './dbullet.js?v=20261113110929';
-import { point_distance, objectExists } from '../runtime/gm.js?v=20261113110929';
+} from './common.js?v=20261114002512';
+import { scr_bulletspawner } from './dbullet.js?v=20261114002512';
+import { point_distance, objectExists } from '../runtime/gm.js?v=20261114002512';
 
 const MonsterParent = tagParent('obj_monsterparent');
 
@@ -166,9 +166,8 @@ export class KnightEnemy extends MonsterParent {
     }
     if (this.overrideAttack > 0) this.phaseturn = this.overrideAttack;
     const set = (choice, diff) => {
-      // TODO: attacks not ported yet (tracking swords, sword tunnel, rotating slash, vortex,
-      // combination, diagonal bullets, the Roaring) fall back to Stars / Flurry, alternating,
-      // at this phase's difficulty, so no turn is left empty.
+      // Every attack is ported; if an attack module fails to load, its turns fall back to
+      // Stars / Flurry, alternating, at this phase's difficulty, so no turn is left empty.
       if (choice > 0 && !PORTED_CHOICES.has(choice)) {
         const flurry = this.turn % 2 === 0;
         const p = Math.min(Math.max(this.phase, 1), 3);

@@ -13,8 +13,8 @@ import {
   collision_rectangle, d3d_set_fog, draw_set_blend_mode, gpu_get_blendmode, sprite_get_width, sprite_get_height,
   sprite_get_xoffset, sprite_get_yoffset, draw_triangle_color, draw_circle, draw_get_alpha, merge_color, random, S,
   defineScript,
-} from '../runtime/gm.js?v=20261113110929';
-import { snd_play, snd_volume, snd_pitch } from '../runtime/audio.js?v=20261113110929';
+} from '../runtime/gm.js?v=20261114002512';
+import { snd_play, snd_volume, snd_pitch } from '../runtime/audio.js?v=20261114002512';
 
 export const VIEW_W = 640;
 export const VIEW_H = 480;
