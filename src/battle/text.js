@@ -5,11 +5,11 @@ import {
   instance_number, withObj, random, button1_p, button2_h, string_length, string_char_at,
   string_insert, string_delete, draw_set_font, draw_set_color, draw_get_color, draw_set_alpha, draw_text,
   draw_text_transformed, draw_text_color, draw_rectangle, draw_sprite_ext, draw_self, button3_h, instancesOf,
-} from '../runtime/gm.js?v=20261114041601';
-import { snd_play, snd_stop, snd_volume, snd_pitch } from '../runtime/audio.js?v=20261114041601';
+} from '../runtime/gm.js?v=20261114054926';
+import { snd_play, snd_stop, snd_volume, snd_pitch } from '../runtime/audio.js?v=20261114054926';
 
 const sin = Math.sin;
-import { fontName, splitCaller, view_x, view_y } from './common.js?v=20261114041601';
+import { fontName, splitCaller, view_x, view_y } from './common.js?v=20261114054926';
 
 // Text sounds that exist in this build; the others are silent.
 const TEXTSND = {
@@ -18,7 +18,7 @@ const TEXTSND = {
 };
 // Tenna's voice: one of nine takes at a random pitch (scr_textsound, Chapter 3).
 const TV_VOICES = ['snd_tv_voice_short', ...[2, 3, 4, 5, 6, 7, 8, 9].map(n => 'snd_tv_voice_short_' + n)];
-import { G } from '../runtime/gm.js?v=20261114041601';
+import { G } from '../runtime/gm.js?v=20261114054926';
 const tsnd = n => TEXTSND[n] ?? null;
 
 // scr_textsetup(font, color, x, y, charline, shake, rate, sound, hspace, vspace, special)
@@ -81,13 +81,13 @@ function scr_texttype(w) {
     case 75: set(F('dotumche'), 0, y, 33, 0, 1, 'snd_txtsus', 9, 20, 0); break;
     case 80: set(F('mainbig'), W, y, 33, 0, 1, 'snd_tv_voice_short', 16, 36, 1); break;
     case 81: set(F('dotumche'), 0, y, 33, 0, 1, 'snd_tv_voice_short', 9, 20, 0); break;
-    case 61: set(F('main'), W, y, 33, 0, 2, null, 8, 18, 0); break;
+    case 61: set(F('main'), W, y, 33, 0, 2, 'snd_txtsus', 12, 20, 0); break; // Susie's voice (DEVICE_FAILURE)
     case 51: set(F('mainbig'), W, y, 33, 0, 10, 'snd_text', 16, 36, 1); break;
     case 52: set(F('mainbig'), W, y, 33, 0, 4, 'snd_text', 16, 36, 1); break;
     case 53: set(F('dotumche'), 0, y, 33, 0, 1, 'snd_txtsus', 9, 20, 0); break;
     case 54: set(F('dotumche'), 0, y, 33, 0, 2, 'snd_txtsus', 9, 20, 0); break;
     case 55: set(F('main'), W, y, 33, 0, 1, 'snd_txtrud', 8, 18, 0); break;
-    case 60: set(F('main'), W, y, 33, 0, 8, null, 8, 18, 0); break;
+    case 60: set(F('main'), W, y, 33, 0, 2, 'snd_txtral', 12, 20, 0); break; // Ralsei's voice (DEVICE_FAILURE)
     case 666: set(F('main'), W, y, 33, 0, 4, null, 12, 20, 2); break;
     case 667: set(F('main'), W, y, 33, 0, 2, null, 12, 20, 2); break;
     case 999: set(F('main'), W, y, 33, 0, 4, null, 8, 18, 3); break;
