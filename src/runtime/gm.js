@@ -9,7 +9,7 @@
 // - Colours are 0xRRGGBB numbers. GML literals are BGR: wrap them in bgr(0x...).
 // - Angles are degrees, counter-clockwise; y points down (same as GameMaker).
 // - `global` holds GML globals: global.tension, global.hp[...] etc.
-import { assets, spriteMask } from './assets.js?v=20261115040952';
+import { assets, spriteMask } from './assets.js?v=20261115042936';
 
 export const global = {};
 export const ROOM_W = 640;
@@ -156,9 +156,8 @@ export function instance_destroy(inst, runDestroy = true) {
 
 // Instances matching a name, an instance, or an array of either. Alive only, creation order.
 // By name, the scan is kept until the next instance_create or defineObject (instances only join
-// G.instances there; one that dies since is left out when read), so the hundreds of bullets that
-// each look up the box every step (the Kaizo diagonal swords) scan the instance list once, not
-// once a bullet.
+// G.instances there; one that dies since is left out when read), so hundreds of bullets that each
+// look up the box every step scan the instance list once, not once a bullet.
 export function instancesOf(target) {
   if (target == null) return [];
   if (target instanceof Instance) return target.alive ? [target] : [];
