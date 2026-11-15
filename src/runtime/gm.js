@@ -9,7 +9,7 @@
 // - Colours are 0xRRGGBB numbers. GML literals are BGR: wrap them in bgr(0x...).
 // - Angles are degrees, counter-clockwise; y points down (same as GameMaker).
 // - `global` holds GML globals: global.tension, global.hp[...] etc.
-import { assets, spriteMask } from './assets.js?v=20261114054926';
+import { assets, spriteMask } from './assets.js?v=20261115040952';
 
 export const global = {};
 export const ROOM_W = 640;
@@ -28,6 +28,9 @@ export const G = {
 // ---------------------------------------------------------------- objects
 
 const registry = new Map();
+// instancesOf's cache (by object name) and its generation, bumped by instance_create / defineObject.
+let instGen = 0;
+const ofCache = new Map();
 let nextId = 100000;
 const warned = new Set();
 
@@ -100,6 +103,7 @@ export class Instance {
 export function defineObject(name, cls) {
   cls.objName = name;
   registry.set(name, cls);
+  instGen++;
   return cls;
 }
 
@@ -134,6 +138,7 @@ export function instance_create(x, y, name, depth) {
   inst.x = inst.xstart = inst.xprevious = x;
   inst.y = inst.ystart = inst.yprevious = y;
   G.instances.push(inst);
+  instGen++;
   const prevOther = G.other;
   if (inst.create) inst.create();
   G.other = prevOther;
@@ -150,11 +155,19 @@ export function instance_destroy(inst, runDestroy = true) {
 }
 
 // Instances matching a name, an instance, or an array of either. Alive only, creation order.
+// By name, the scan is kept until the next instance_create or defineObject (instances only join
+// G.instances there; one that dies since is left out when read), so the hundreds of bullets that
+// each look up the box every step (the Kaizo diagonal swords) scan the instance list once, not
+// once a bullet.
 export function instancesOf(target) {
   if (target == null) return [];
   if (target instanceof Instance) return target.alive ? [target] : [];
   if (Array.isArray(target)) return target.flatMap(instancesOf);
-  return G.instances.filter(i => i.alive && isA(i, target));
+  const c = ofCache.get(target);
+  if (c && c.gen === instGen) return c.list.filter(i => i.alive);
+  const list = G.instances.filter(i => i.alive && isA(i, target));
+  ofCache.set(target, { gen: instGen, list });
+  return list.slice();
 }
 
 // with (target) { ... }: fn receives each instance; G.other is the caller during the loop.
@@ -211,6 +224,7 @@ export const S = new Proxy({}, {
 export function room_reset() {
   for (const i of G.instances) i.alive = false;
   G.instances = [];
+  ofCache.clear();
   for (const k of Object.keys(global)) delete global[k];
   G.camX = G.camY = 0;
 }

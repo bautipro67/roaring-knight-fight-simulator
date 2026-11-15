@@ -1,6 +1,6 @@
 // Player options and control bindings, remembered in this browser when storage is available.
-import { G, controls, setControls } from './runtime/gm.js?v=20261114054926';
-import { setMasterVolume } from './runtime/audio.js?v=20261114054926';
+import { G, controls, setControls } from './runtime/gm.js?v=20261115040952';
+import { setMasterVolume } from './runtime/audio.js?v=20261115040952';
 
 const SETTINGS_KEY = 'knight-sim-settings';
 const CONTROLS_KEY = 'knight-sim-controls';
