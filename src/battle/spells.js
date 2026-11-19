@@ -3,9 +3,9 @@ import {
   global, Instance, defineObject, defineScript, S, instance_create, instance_destroy, instance_exists,
   instance_find, withObj, event_user, random, ceil, round, merge_color, point_direction, point_distance,
   angle_difference, button1_p, draw_self, draw_sprite_ext, d3d_set_fog,
-} from '../runtime/gm.js?v=20261116033730';
-import { snd_play, snd_stop } from '../runtime/audio.js?v=20261116033730';
-import { withInst, subst, knightEnemy } from './common.js?v=20261116033730';
+} from '../runtime/gm.js?v=20261119142800';
+import { snd_play, snd_stop } from '../runtime/audio.js?v=20261119142800';
+import { withInst, subst, knightEnemy } from './common.js?v=20261119142800';
 
 const g = global;
 
@@ -408,6 +408,7 @@ class RudeBusterBolt extends Instance {
       const m = this.target ? this.target.myself : this.star;
       this.cx = g.monsterx[m];
       this.cy = g.monstery[m];
+      if (knightEnemy()) this.cy -= 50; // (the beam aims at the Knight's body, 50 px up)
       this.direction = point_direction(this.x, this.y, this.cx, this.cy) - 20;
       this.speed = 24;
       this.friction = -1.5;

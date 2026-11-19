@@ -1,10 +1,10 @@
 // obj_heroparent and the three party members: poses, attack hit (Alarm_1), spell/item cast (Alarm_4).
 import {
-  global, Instance, defineObject, S, instance_create, instance_exists, withObj, random, round, ceil,
+  global, Instance, defineObject, defineScript, S, instance_create, instance_exists, instancesOf, withObj, random, round, ceil,
   merge_color, draw_sprite_ext, d3d_set_fog, sprite_get_number,
-} from '../runtime/gm.js?v=20261116033730';
-import { snd_play, snd_stop, snd_pitch } from '../runtime/audio.js?v=20261116033730';
-import { withInst, knightEnemy } from './common.js?v=20261116033730';
+} from '../runtime/gm.js?v=20261119142800';
+import { snd_play, snd_stop, snd_pitch } from '../runtime/audio.js?v=20261119142800';
+import { withInst, knightEnemy } from './common.js?v=20261119142800';
 
 const g = global;
 
@@ -27,6 +27,7 @@ export class HeroParent extends Instance {
     this.darkify = 0;
     this.image_xscale = 2;
     this.image_yscale = 2;
+    this.maxframes = 0;
     this.myheight = 37;
     this.mywidth = 34;
     this.index = 0;
@@ -73,6 +74,13 @@ export class HeroParent extends Instance {
 
   draw() {
     const me = this.myself;
+    // State 8 (scr_battle_sprite_set): a set sprite, back to normal after maxframes (never when 0).
+    if (this.state == 8 && this.image_index + this.image_speed >= this.maxframes && this.maxframes != 0) {
+      this.state = 0;
+      this.hurt = 0;
+      this.attacktimer = 0;
+      this.maxframes = 0;
+    }
     if (g.hp[g.char[me]] > 0) {
       if (g.myfight == 3 && g.faceaction[me] == 6) this.state = 6;
       if (this.state == 0 && this.hurt == 0) {
@@ -182,7 +190,9 @@ export class HeroParent extends Instance {
           g.charcond[me] = 0;
         }
         if (g.faceaction[me] == 0) g.faceaction[me] = 5;
-        if (g.faceaction[me] != 4) {
+        if (this.state == 8) {
+          // (the set sprite is drawn instead of the hurt pose)
+        } else if (g.faceaction[me] != 4) {
           this.specdraw = 1;
           draw_sprite_ext(this.hurtsprite, this.hurtindex, this.x - 20 + this.hurtindex * 10, this.y, 2, 2, 0, this.image_blend, this.image_alpha);
         } else {
@@ -206,7 +216,9 @@ export class HeroParent extends Instance {
       this.index = 0;
       this.siner += 1;
     }
-    if (this.specdraw == 0) {
+    if (this.state == 8) {
+      draw_sprite_ext(this.sprite_index, this.image_index, this.x, this.y, this.image_xscale, this.image_yscale, this.image_angle ?? 0, this.image_blend, this.image_alpha);
+    } else if (this.specdraw == 0) {
       this.sprite_index = this.thissprite;
       this.image_index = this.index;
       draw_sprite_ext(this.thissprite, this.index, this.x, this.y, 2, 2, 0, this.image_blend, this.image_alpha);
@@ -295,6 +307,24 @@ export class HeroParent extends Instance {
   }
 }
 defineObject('obj_heroparent', HeroParent);
+
+// scr_battle_sprite_set(who, sprite, speed, keep) / scr_battle_sprite_reset(who): a hero shows a set
+// sprite (state 8) until its last frame, or until reset when `keep` is true (Kris falling to 1 HP
+// against the Knight, scr_damage_maxhp).
+const HERO = { kris: 'obj_herokris', susie: 'obj_herosusie', ralsei: 'obj_heroralsei', noelle: 'obj_heronoelle' };
+defineScript('scr_battle_sprite_set', (who, sprite, speed, keep) => {
+  for (const h of instancesOf(HERO[who] ?? 'obj_herokris')) {
+    Object.assign(h, { state: 8, hurt: 0, attacktimer: 0, sprite_index: sprite, image_speed: speed, image_index: 0 });
+    if (!keep) h.maxframes = sprite_get_number(sprite);
+    g.faceaction[h.myself] = 0;
+  }
+});
+defineScript('scr_battle_sprite_reset', (who) => {
+  for (const h of instancesOf(HERO[who] ?? 'obj_herokris')) {
+    Object.assign(h, { state: 0, hurt: 0, attacktimer: 0, attacked: 0, maxframes: 0 });
+    g.faceaction[h.myself] = 0;
+  }
+});
 
 class HeroKris extends HeroParent {
   setup() {
