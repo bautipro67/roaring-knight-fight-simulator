@@ -2,8 +2,8 @@
 // obj_regularbullet, and the scripts scr_bullet_init / scr_bullet_inherit / scr_childbullet.
 import {
   Instance, defineObject, defineScript, instance_destroy, instance_exists, S,
-} from '../runtime/gm.js?v=20261119142800';
-import { view_x, view_y, cameray, scr_bullet_init, scr_bullet_inherit, scr_childbullet } from './common.js?v=20261119142800';
+} from '../runtime/gm.js?v=20261119162325';
+import { view_x, view_y, cameray, scr_bullet_init, scr_bullet_inherit, scr_childbullet } from './common.js?v=20261119162325';
 
 export class BulletParent extends Instance {}
 defineObject('obj_bulletparent', BulletParent);
@@ -25,6 +25,11 @@ export class CollideBullet extends BulletParent {
 defineObject('obj_collidebullet', CollideBullet);
 
 export class RegularBullet extends CollideBullet {
+  // (the game's depth table puts obj_regularbullet itself at -10; its children, not in the table, at 0)
+  constructor() {
+    super();
+    if (new.target === RegularBullet) this.depth = -10;
+  }
   create() {
     scr_bullet_init(this);
     this.spin = 0;

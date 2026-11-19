@@ -2,10 +2,10 @@
 import {
   global, Instance, defineObject, defineScript, S, instance_create, instance_destroy, instance_exists,
   instance_find, withObj, event_user, random, ceil, round, merge_color, point_direction, point_distance,
-  angle_difference, button1_p, draw_self, draw_sprite_ext, d3d_set_fog,
-} from '../runtime/gm.js?v=20261119142800';
-import { snd_play, snd_stop } from '../runtime/audio.js?v=20261119142800';
-import { withInst, subst, knightEnemy } from './common.js?v=20261119142800';
+  angle_difference, button1_p, draw_self, draw_sprite_ext, d3d_set_fog, instancesOf,
+} from '../runtime/gm.js?v=20261119162325';
+import { snd_play, snd_stop, snd_pitch, snd_volume } from '../runtime/audio.js?v=20261119162325';
+import { withInst, subst, knightEnemy } from './common.js?v=20261119162325';
 
 const g = global;
 
@@ -332,10 +332,22 @@ defineScript('scr_mercyadd', (m, amt) => {
   g.mercymod[m] += amt;
   if (g.mercymod[m] < 0) g.mercymod[m] = 0;
   if (g.mercymod[m] >= 100) g.mercymod[m] = 100;
+  // The chime, unless the amount is 0 or less or a MERCY number is just appearing (Chapters 3-5).
+  let play = amt > 0;
+  for (const o of instancesOf('obj_dmgwriter')) if (o.type == 5 && o.mercytimer < 8) play = false;
+  if (play) {
+    let pitch = 0.8;
+    if (amt < 99) pitch = 1;
+    if (amt <= 50) pitch = 1.2;
+    if (amt <= 25) pitch = 1.4;
+    const v = snd_play('snd_mercyadd');
+    if (v) { snd_volume(v, 0.8, 0); snd_pitch(v, pitch); }
+  }
   const d = instance_create(g.monsterx[m], g.monstery[m] + 20 - g.hittarget[m] * 20, 'obj_dmgwriter');
   d.damage = amt;
   d.type = 5;
   g.hittarget[m] += 1;
+  return d;
 });
 
 // ---------------------------------------------------------------- Rude Buster

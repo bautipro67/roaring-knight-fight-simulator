@@ -3,8 +3,8 @@
 import {
   global, G, Instance, defineObject, defineScript, S, instance_create, instance_destroy, instance_exists,
   draw_sprite_ext, d3d_set_fog, objectExists, lerp, make_color_hsv, merge_color, instancesOf,
-} from '../runtime/gm.js?v=20261119142800';
-import { splitCaller, draw_sprite_tiled_ext, knightEnemy } from './common.js?v=20261119142800';
+} from '../runtime/gm.js?v=20261119162325';
+import { splitCaller, draw_sprite_tiled_ext, knightEnemy } from './common.js?v=20261119162325';
 
 // Generic effect objects the Knight modules may also register (their Chapter 3 versions win).
 const shared = (name, cls) => { if (!objectExists(name)) defineObject(name, cls); };
@@ -238,7 +238,7 @@ class FadeOut extends Instance {
     this.x = -20; // Create moves it here, whatever position scr_fadeout gave it
     this.y = -20;
     this.fadein = 0;
-    this.depth = -1000;
+    this.depth = -99999; // (the game's depth table: over everything)
   }
   draw() {
     this.image_alpha += this.fadespeed;
