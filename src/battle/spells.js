@@ -3,9 +3,9 @@ import {
   global, Instance, defineObject, defineScript, S, instance_create, instance_destroy, instance_exists,
   instance_find, withObj, event_user, random, ceil, round, merge_color, point_direction, point_distance,
   angle_difference, button1_p, draw_self, draw_sprite_ext, d3d_set_fog, instancesOf,
-} from '../runtime/gm.js?v=20261119162325';
-import { snd_play, snd_stop, snd_pitch, snd_volume } from '../runtime/audio.js?v=20261119162325';
-import { withInst, subst, knightEnemy } from './common.js?v=20261119162325';
+} from '../runtime/gm.js?v=20261120023302';
+import { snd_play, snd_stop, snd_pitch, snd_volume } from '../runtime/audio.js?v=20261120023302';
+import { withInst, subst, knightEnemy } from './common.js?v=20261120023302';
 
 const g = global;
 
@@ -446,11 +446,16 @@ class RudeBusterBolt extends Instance {
     }
     if (this.explode == 1) {
       if (this.t == 1) {
+        // A press of Z within two frames of the hit also sends the burst out faster (bonus_anim).
+        let bonus_anim = 0;
         if (this.chosen_bolt > 0) {
           const d = this.final_bolt - this.chosen_bolt;
           const bonus = { 0: 30, 1: 28, 2: 22, 3: 20, 4: 13, 5: 11, 6: 10 }[d];
           if (bonus) this.damage += bonus;
-          if (Math.abs(this.chosen_bolt - this.final_bolt) <= 2) snd_play('snd_scytheburst');
+          if (Math.abs(this.chosen_bolt - this.final_bolt) <= 2) {
+            bonus_anim = 1;
+            snd_play('snd_scytheburst');
+          }
         }
         if (this.red == 1) this.damage += 90;
         g.hittarget[this.star] = 0;
@@ -470,7 +475,7 @@ class RudeBusterBolt extends Instance {
           b.y = this.cy;
           b.image_angle = 45 + i * 90;
           b.direction = b.image_angle;
-          b.speed = 25;
+          b.speed = bonus_anim == 1 ? 40 : 25;
           b.depth = this.depth - 10;
           this.burst[i] = b;
         }
