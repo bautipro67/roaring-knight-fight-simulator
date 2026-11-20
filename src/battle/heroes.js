@@ -2,9 +2,9 @@
 import {
   global, Instance, defineObject, defineScript, S, instance_create, instance_exists, instancesOf, withObj, random, round, ceil,
   merge_color, draw_sprite_ext, d3d_set_fog, sprite_get_number,
-} from '../runtime/gm.js?v=20261120023302';
-import { snd_play, snd_stop, snd_pitch } from '../runtime/audio.js?v=20261120023302';
-import { withInst, knightEnemy } from './common.js?v=20261120023302';
+} from '../runtime/gm.js?v=20261120132038';
+import { snd_play, snd_stop, snd_pitch } from '../runtime/audio.js?v=20261120132038';
+import { withInst, knightEnemy } from './common.js?v=20261120132038';
 
 const g = global;
 

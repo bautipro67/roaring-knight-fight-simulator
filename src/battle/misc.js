@@ -3,8 +3,8 @@
 import {
   global, G, Instance, defineObject, defineScript, S, instance_create, instance_destroy, instance_exists,
   draw_sprite_ext, d3d_set_fog, objectExists, lerp, make_color_hsv, merge_color, instancesOf,
-} from '../runtime/gm.js?v=20261120023302';
-import { splitCaller, draw_sprite_tiled_ext, knightEnemy } from './common.js?v=20261120023302';
+} from '../runtime/gm.js?v=20261120132038';
+import { splitCaller, draw_sprite_tiled_ext, knightEnemy } from './common.js?v=20261120132038';
 
 // Generic effect objects the Knight modules may also register (their Chapter 3 versions win).
 const shared = (name, cls) => { if (!objectExists(name)) defineObject(name, cls); };
@@ -99,7 +99,9 @@ defineScript('scr_oflash', (src) => {
   return o;
 });
 
-// obj_shake: shakes the view (G.camX/G.camY) by 4 px, alternating sign, decaying by 1 per frame.
+// obj_shake (Chapters 2-4): shakes the view; only one at a time (a second one destroys itself in its
+// Create), and the view goes back to where the shake found it. Two shakes at once used to leave the
+// view a few pixels off for good.
 class Shake extends Instance {
   create() {
     this.camera = 0;
@@ -110,11 +112,15 @@ class Shake extends Instance {
     this.siner = 0;
     this.active = 0;
     this.permashake = 0;
-    this.camerax = G.camX;
-    this.cameray = G.camY;
+    this.beenset = 0;
+    if (instancesOf('obj_shake').length >= 2) {
+      this.active = -1;
+      instance_destroy(this);
+    }
   }
   step() {
     if (this.active == 0) {
+      this.beenset = 1;
       this.camerax = G.camX;
       this.cameray = G.camY;
       if (!global.flag || global.flag[12] == 0) {
@@ -140,8 +146,10 @@ class Shake extends Instance {
     if (this.shakex == 0 && this.shakey == 0) instance_destroy(this);
   }
   onDestroy() {
-    G.camX = this.camerax;
-    G.camY = this.cameray;
+    if (this.beenset) {
+      G.camX = this.camerax;
+      G.camY = this.cameray;
+    }
   }
 }
 shared('obj_shake', Shake);
